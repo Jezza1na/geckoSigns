@@ -1,197 +1,92 @@
 .header {
-  position: fixed;
-  width: 100%;
-  height: var(--header);
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  background: var(--headerBackground);
-  color: #fff;
-  font-size: 20px;
-  padding: 20px;
-  z-index: 1200;
-}
-
-.studentId {
-  position: absolute;
-  left: 20px; 
-  top: 50%; 
-  transform: 
-  translateY(-50%);
-  font-size: 16px; 
-}
-
-.topRow {
-  position: fixed;
-  top: var(--header); 
-  width: 100%;
-  height: var(--tabs);
-  display: flex; 
-  justify-content: space-between; 
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
-  padding: 10px 20px;
-  background: var(--rows);
-  z-index: 1100;
-}
-
-.tabs { 
-  display: flex; 
-  gap: 12px; 
-}
-
-.tabLink { 
-  text-decoration: none; 
-}
-
-.tab {
-  display: flex; 
-  align-items: center; 
-  justify-content: center;
-  width: 110px; 
-  height: 40px; 
-  border-radius: 6px;
-  font-weight: 700;
-  background: var(--tabColour);
-  color: var(--tabText);
-  border: 1px solid var(--dropDownBorder);
-}
-
-.container { 
-    position: relative; 
-  }
-
-.hamburger {
-  width: 30px; 
-  height: 30px;
-  display: inline-flex; 
-  flex-direction: column; 
-  justify-content: center; 
-  gap: 5px;
-}
-
-.bar, .barOpen {
-  height: 3px; 
-  width: 100%;
-  background: var(--tabText);
-  transition: all 0.3s ease;
-}
-
-.hamburger:focus-visible { 
-  outline: 2px solid var(--linkColour); 
-  outline-offset: 2px; 
-}
-
-.barOpen:nth-child(1) {
-    transform: rotate(45deg) translate(5px, 5px);
-  }
- 
-  .barOpen:nth-child(2) {
-    opacity: 0;
-  }
- 
-  .barOpen:nth-child(3) {
-    transform: rotate(-45deg) translate(5px, -5px);
-  }
-
-.menu, .menuOpen {
-  position: fixed;
-  right: 20px;
-  width: min(280px, 90vw);
-  background: var(--dropDown);
-  border: 1px solid var(--dropDownBorder);
-  border-radius: 10px;
-  overflow: hidden;
-  transition: all 0.3s ease;
-}
-
-.menu {
-  visibility: hidden;
-  opacity: 0;
-  transform: translateY(-8px);
-  pointer-events: none;
-}
-
-.menuOpen {
-  visibility: visible;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.menuList {
-  margin: 0;
-  padding: 8px 0;
-  list-style: none;
-}
-
-.menuLink {
-  display: block;
-  padding: 10px 16px;
+  padding: 0 20px;
+  height: var(--header);
+  background-color: var(--headerBackground);
   color: var(--textColour);
-  text-decoration: none;
+  font-size: 18px;
 }
 
-.menuLink:hover { 
-  background: rgba(0, 0, 0, .1); 
+/* Site name centered absolutely */
+.siteName {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #f8f9fa;
+  font-weight: bold;
+  font-size: 50px;
 }
 
-.toggleRow {
-  display: flex; align-items: center; 
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px 16px;
-  border-top: 1px solid var(--dropDownBorder);
+/* Right container: toggle + icons */
+.rightContainer {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
+/* Dark mode toggle */
+.toggleContainer {
+  display: flex;
+  align-items: center;
+}
+
+/* Switch styles */
 .switch {
-  position: relative; 
+  position: relative;
   display: inline-block;
-  width: 40px; height: 22px;
+  width: 40px;
+  height: 22px;
 }
 
 .switch > input {
-  opacity: 0; 
-  width: 0; 
-  height: 0; 
-  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .track {
-  position: absolute; inset: 0;
+  position: absolute;
+  inset: 0;
   background: #ccc;
   border-radius: 20px;
-  transition: background .3s;
+  transition: background 0.3s;
 }
 
 .thumb {
-  position: absolute; bottom: 3px; left: 2px;
-  height: 16px; width: 16px;
+  position: absolute;
+  bottom: 3px;
+  left: 2px;
+  height: 16px;
+  width: 16px;
   background: #fff;
   border-radius: 50%;
-  transition: left .3s;
+  transition: left 0.3s;
 }
 
-.switch input:checked + .track { 
-  background: green; 
+.switch input:checked + .track {
+  background: green;
 }
 
-.switch input:checked ~ .thumb { 
-  left: 22px; 
+.switch input:checked ~ .thumb {
+  left: 22px;
 }
 
+/* 2x2 icon grid */
+.iconGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 6px;
+}
 
-.tab {
-  transition: all 0.3s ease;
+.iconBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 28px;
   cursor: pointer;
-}
-
-.tabLink:hover .tab,
-.tab:hover {
-  background: color-mix(in srgb, var(--tabColour) 85%, var(--textColour) 15%);
-  border-color: color-mix(in srgb, var(--dropDownBorder) 85%, var(--textColour) 15%);
-}
-
-
-.tab:active {
-  transform: translateY(1px);
 }

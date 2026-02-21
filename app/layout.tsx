@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 
-import Navbar from "./navBar";
+import Navbar from "./header";
 
 
 export const metadata: Metadata = {
-  title: "WebPage",
+  title: "GeckoSigns",
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
@@ -16,7 +16,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <style>{`:root{--header:60px;--tabs:60px;}`}</style>
+        <style>{`:root{--header:100px;}`}</style>
         <style>{`
           html, body {
             background-color: var(--bodyBackground, #ffffff);
@@ -63,7 +63,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
           <main
             style={{
               flexGrow: 1,
-              paddingTop: "calc(var(--header) + var(--tabs))",
+              paddingTop: "var(--header)",
               paddingLeft: 20,
               paddingRight: 20,
             }}
@@ -84,7 +84,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
                 alignItems: "center",
               }}
             >
-              <span>WebPage</span>
+              <span>GeckoSigns</span>
               <span>&copy; {currentYear}</span>
               <span suppressHydrationWarning>{currentDate}</span>
             </div>
