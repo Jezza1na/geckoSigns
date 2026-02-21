@@ -7,7 +7,6 @@ import { useState } from 'react';
 export default function Home() {
   const [selectedOption, setSelectedOption] = useState('1.8m x 1m');
 
-  // Map options to a single placeholder photo number
   const optionPhotos: Record<string, number> = {
     '1.8m x 1m': 1,
     '2m': 2,
@@ -157,8 +156,8 @@ const styles = {
   },
   photoPreview: {
   marginTop: '1rem',
-  width: '100%',        // takes full width of the column
-  height: '400px',      // adjust height as needed
+  width: '100%',
+  height: '400px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',

@@ -12,7 +12,7 @@ export default function ClientLayout({ children }: Props) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // 🔁 Restore last page ONCE when user opens site
+  // Restore last page ONCE when user opens site
   useEffect(() => {
 
     const consent = Cookies.get('cookie_consent');
@@ -32,7 +32,7 @@ export default function ClientLayout({ children }: Props) {
 
   }, [router, pathname]);
 
-  // 📍 Silently update location while navigating SPA
+  // Silently update location while navigating SPA
   useEffect(() => {
 
     if (Cookies.get('cookie_consent') === 'true') {

@@ -10,7 +10,6 @@
   font-size: 18px;
 }
 
-/* Site name centered absolutely */
 .siteName {
   position: absolute;
   left: 50%;
@@ -20,20 +19,17 @@
   font-size: 50px;
 }
 
-/* Right container: toggle + icons */
 .rightContainer {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-/* Dark mode toggle */
 .toggleContainer {
   display: flex;
   align-items: center;
 }
 
-/* Switch styles */
 .switch {
   position: relative;
   display: inline-block;
@@ -74,7 +70,6 @@
   left: 22px;
 }
 
-/* 2x2 icon grid */
 .iconGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

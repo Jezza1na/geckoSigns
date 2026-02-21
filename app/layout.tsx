@@ -16,7 +16,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <style>{`:root{--header:100px;}`}</style>
+        <style>{`:root{--header:100px;}`}</style> 
         <style>{`
           html, body {
             background-color: var(--bodyBackground, #ffffff);

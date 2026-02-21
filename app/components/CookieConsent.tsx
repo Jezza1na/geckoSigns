@@ -14,7 +14,6 @@ export default function CookieConsent() {
     setShow(consent !== 'true');
   }, []);
 
-  // 🔥 THIS runs every time user moves page AFTER accepting
   useEffect(() => {
     const consent = Cookies.get('cookie_consent');
 
