@@ -18,7 +18,7 @@ export default function NavBar() {
     root.style.setProperty('--textColour',           darkMode ? '#f8f9fa' : '#212529');
     root.style.setProperty('--bodyBackgroundBorder', darkMode ? '#2a2a2a' : '#dee2e6');
     root.style.setProperty('--linkColour',           darkMode ? '#6ab0ff' : '#0d6efd');
-    root.style.setProperty('--headerBackground', darkMode ? '#111' : '#222');
+    root.style.setProperty('--headerBackground', darkMode ? '#000000' : '#000000');
 
     try { localStorage.setItem('dark_mode', String(darkMode)); }
     catch {}

@@ -5,14 +5,8 @@ import Image from 'next/image';
 import { useState } from 'react';
 
 export default function Home() {
-  const [selectedOption, setSelectedOption] = useState('1.8m x 1m');
-
-  const optionPhotos: Record<string, number> = {
-    '1.8m x 1m': 1,
-    '2m': 2,
-    '3m': 3,
-    '4m': 4,
-  };
+  const [selectedSize, setSelectedSize] = useState<'normal' | 'custom'>('normal');
+  const [customWriting, setCustomWriting] = useState('');
 
   return (
     <ClientLayout>
@@ -20,20 +14,29 @@ export default function Home() {
 
         {/* Banner Section */}
         <section style={styles.banner}>
-          <h1 style={styles.bannerText}>Your Banner Title Here</h1>
-          <p style={styles.bannerText}>Subheading or tagline goes here.</p>
+          <Image
+            src="/images/main.jpeg" // Banner image
+            alt="Banner"
+            fill
+            style={{ objectFit: 'cover', borderRadius: '12px' }}
+          />
         </section>
 
-        {/* 8 Placeholder Photos in 2x4 grid */}
+        {/* 8 Product Photos in 2x4 grid */}
         <section style={styles.gridSection}>
           {[...Array(8)].map((_, idx) => (
-            <div key={idx} style={styles.photoPlaceholder}>
-              <span>Photo {idx + 1}</span>
+            <div key={idx} style={styles.imageWrapper}>
+              <Image
+                src={`/images/productImg${idx + 1}.jpeg`} // Product images
+                alt={`Photo ${idx + 1}`}
+                fill
+                style={{ objectFit: 'cover', borderRadius: '8px' }}
+              />
             </div>
           ))}
         </section>
 
-        {/* Info Placeholder */}
+        {/* Info Section */}
         <section style={styles.infoSection}>
           <h2>Information Section</h2>
           <p>
@@ -41,33 +44,57 @@ export default function Home() {
           </p>
         </section>
 
-        {/* 2-column Section: Options + Enquiry Form */}
+        {/* 2-column Section: Sizes + Enquiry Form */}
         <section style={styles.optionsFormSection}>
-          {/* Left: Single Option Photo */}
+
+          {/* Left: Sizes */}
           <div style={styles.optionsColumn}>
-            <h2>Select Size</h2>
+            <h2>Sizes</h2>
             <div style={styles.optionButtons}>
-              {Object.keys(optionPhotos).map(option => (
-                <button
-                  key={option}
-                  style={{
-                    ...styles.optionButton,
-                    backgroundColor: selectedOption === option ? '#0d6efd' : '#ddd',
-                    color: selectedOption === option ? '#fff' : '#000',
-                  }}
-                  onClick={() => setSelectedOption(option)}
-                >
-                  {option}
-                </button>
-              ))}
+              <button
+                style={{
+                  ...styles.optionButton,
+                  backgroundColor: selectedSize === 'normal' ? '#0d6efd' : '#ddd',
+                  color: selectedSize === 'normal' ? '#fff' : '#000',
+                }}
+                onClick={() => setSelectedSize('normal')}
+              >
+                Normal
+              </button>
+              <button
+                style={{
+                  ...styles.optionButton,
+                  backgroundColor: selectedSize === 'custom' ? '#0d6efd' : '#ddd',
+                  color: selectedSize === 'custom' ? '#fff' : '#000',
+                }}
+                onClick={() => setSelectedSize('custom')}
+              >
+                Custom
+              </button>
             </div>
 
+            {/* Photo or Writing Input */}
             <div style={styles.photoPreview}>
-              <div style={{ ...styles.photoPlaceholder, width: '100%', height: '100%' }}>
-                <span>Photo {optionPhotos[selectedOption]}</span>
-              </div>
+              {selectedSize === 'normal' ? (
+                <div style={styles.imageWrapper}>
+                  <Image
+                    src="/images/photo1.png" // Normal size photo
+                    alt="Normal Size"
+                    fill
+                    style={{ objectFit: 'cover', borderRadius: '8px' }}
+                  />
+                </div>
+              ) : (
+                <textarea
+                  placeholder="Enter your writing"
+                  value={customWriting}
+                  onChange={(e) => setCustomWriting(e.target.value)}
+                  style={{ ...styles.input, height: '150px' }}
+                />
+              )}
             </div>
-              </div>
+          </div>
+
           {/* Right: Enquiry Form */}
           <div style={styles.formColumn}>
             <h2>Enquiry Form</h2>
@@ -82,6 +109,7 @@ export default function Home() {
               <button type="submit" style={styles.submitButton}>Submit</button>
             </form>
           </div>
+
         </section>
 
       </div>
@@ -104,28 +132,12 @@ const styles = {
     borderRadius: '12px',
     marginTop: '1rem',
   },
-  bannerText: {
-    margin: 0,
-    padding: '0.5rem 1rem',
-    backgroundColor: 'rgba(255,255,255,0.6)',
-    borderRadius: '8px',
-  },
 
   gridSection: {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
     gridTemplateRows: 'repeat(4, 400px)',
     gap: '1rem',
-  },
-  photoPlaceholder: {
-    backgroundColor: '#ddd',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: '8px',
-    fontSize: '14px',
-    fontWeight: 600,
-    color: '#555',
   },
 
   infoSection: {
@@ -138,47 +150,55 @@ const styles = {
     display: 'flex',
     gap: '2rem',
   },
+
   optionsColumn: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column' as const,
     gap: '1rem',
   },
+
   optionButtons: {
     display: 'flex',
     gap: '1rem',
   },
+
   optionButton: {
     padding: '0.5rem 1rem',
     borderRadius: '6px',
     border: 'none',
     cursor: 'pointer',
   },
+
   photoPreview: {
-  marginTop: '1rem',
-  width: '100%',
-  height: '400px',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-},
+    marginTop: '1rem',
+    width: '100%',
+    height: '400px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   formColumn: {
     flex: 1,
     backgroundColor: '#eee',
     padding: '1rem',
     borderRadius: '12px',
   },
+
   form: {
     display: 'flex',
     flexDirection: 'column' as const,
     gap: '1rem',
   },
+
   input: {
     padding: '0.75rem 1rem',
     borderRadius: '6px',
     border: '1px solid #ccc',
     fontSize: '16px',
   },
+
   submitButton: {
     padding: '0.75rem 1rem',
     borderRadius: '6px',
@@ -187,5 +207,13 @@ const styles = {
     color: '#fff',
     fontSize: '16px',
     cursor: 'pointer',
+  },
+
+  imageWrapper: {
+    position: 'relative' as const,
+    width: '100%',
+    height: '100%',
+    borderRadius: '8px',
+    overflow: 'hidden',
   },
 };
