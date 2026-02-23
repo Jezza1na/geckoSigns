@@ -46,17 +46,11 @@ export default function ClientLayout({ children }: Props) {
       style={{
         position: 'relative',
         minHeight: '100vh',
-        paddingBottom: 100,
         background: 'var(--bodyBackground)',
         color: 'var(--textColour)',
       }}
     >
-      <main
-        style={{
-          paddingLeft: 20,
-          paddingRight: 20
-        }}
-      >
+      <main>
         {children}
       </main>
 

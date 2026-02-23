@@ -19,10 +19,10 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         <style>{`:root{--header:100px;}`}</style> 
         <style>{`
           html, body {
-            background-color: var(--bodyBackground, #ffffff);
+            background-color: var(--bodyBackground, #0B0B0B);
             color: var(--textColour, #212529);
           }
-          * { border-color: var(--bodyBackgroundBorder, #dee2e6); }
+          * { border-color: var(--bodyBackgroundBorder, #0B0B0B); }
           a { color: var(--linkColour, #0d6efd); }
         `}</style>
 
@@ -60,14 +60,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         >
           <Navbar />
 
-          <main
-            style={{
-              flexGrow: 1,
-              paddingTop: "var(--header)",
-              paddingLeft: 20,
-              paddingRight: 20,
-            }}
-          >
+          <main>
             {children}
           </main>
 
@@ -80,7 +73,6 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
             <div
               style={{
                 display: "flex",
-                justifyContent: "space-between",
                 alignItems: "center",
               }}
             >

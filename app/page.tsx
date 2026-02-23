@@ -2,114 +2,87 @@
 
 import ClientLayout from '@/app/ClientLayout';
 import Image from 'next/image';
-import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 export default function Home() {
-  const [selectedSize, setSelectedSize] = useState<'normal' | 'custom'>('normal');
-  const [customWriting, setCustomWriting] = useState('');
-
   return (
     <ClientLayout>
-      <div style={{ padding: '0 4rem', display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+      <div style={styles.pageWrapper}>
 
-        {/* Banner Section */}
-        <section style={styles.banner}>
-          <Image
-            src="/images/main.jpeg" // Banner image
-            alt="Banner"
-            fill
-            style={{ objectFit: 'cover', borderRadius: '12px' }}
-          />
-        </section>
-
-        {/* 8 Product Photos in 2x4 grid */}
-        <section style={styles.gridSection}>
-          {[...Array(8)].map((_, idx) => (
-            <div key={idx} style={styles.imageWrapper}>
-              <Image
-                src={`/images/productImg${idx + 1}.jpeg`} // Product images
-                alt={`Photo ${idx + 1}`}
-                fill
-                style={{ objectFit: 'cover', borderRadius: '8px' }}
-              />
-            </div>
-          ))}
-        </section>
-
-        {/* Info Section */}
-        <section style={styles.infoSection}>
-          <h2>Information Section</h2>
-          <p>
-            This is a placeholder for general information about your products or services. You can fill in your text here.
+        {/* Heading + Intro Text below header */}
+        <section style={styles.introSection}>
+          <h1 style={styles.introHeading}>Welcome to Milestone BANNERS</h1>
+          <p style={styles.introText}>
+            Explore our premium run-through milestone banners. Custom sizes, premium materials, and designs for every celebration!
           </p>
         </section>
 
-        {/* 2-column Section: Sizes + Enquiry Form */}
-        <section style={styles.optionsFormSection}>
+        {/* 8 Product Photos (Animated Slide In) */}
+        <section style={styles.gridSection}>
+          {[...Array(8)].map((_, idx) => {
+            const isLeftColumn = idx % 2 === 0;
+            return (
+              <motion.div
+                key={idx}
+                style={styles.imageWrapper}
+                initial={{ x: isLeftColumn ? -200 : 200, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              >
+                <Image
+                  src={`/images/productImg${idx + 1}.jpeg`}
+                  alt={`Photo ${idx + 1}`}
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </motion.div>
+            );
+          })}
+        </section>
 
-          {/* Left: Sizes */}
-          <div style={styles.optionsColumn}>
-            <h2>Sizes</h2>
-            <div style={styles.optionButtons}>
-              <button
-                style={{
-                  ...styles.optionButton,
-                  backgroundColor: selectedSize === 'normal' ? '#0d6efd' : '#ddd',
-                  color: selectedSize === 'normal' ? '#fff' : '#000',
-                }}
-                onClick={() => setSelectedSize('normal')}
-              >
-                Normal
-              </button>
-              <button
-                style={{
-                  ...styles.optionButton,
-                  backgroundColor: selectedSize === 'custom' ? '#0d6efd' : '#ddd',
-                  color: selectedSize === 'custom' ? '#fff' : '#000',
-                }}
-                onClick={() => setSelectedSize('custom')}
-              >
-                Custom
-              </button>
+        {/* Info Section - 2 Columns */}
+        <section style={styles.infoSection}>
+          <div style={styles.infoGrid}>
+            <div style={styles.infoBox}>
+              <h1 style={{ color: '#39FF14' }}>Standard size</h1>
+              <h3>1.8m x 4m</h3>
+              <p>
+                Our milestone banners are normally printed at our standard size of 1.8m X 4m. All our run through banners use durable,
+                weather-resistant materials designed to last indoors and outdoors.
+              </p>
             </div>
 
-            {/* Photo or Writing Input */}
-            <div style={styles.photoPreview}>
-              {selectedSize === 'normal' ? (
-                <div style={styles.imageWrapper}>
-                  <Image
-                    src="/images/photo1.png" // Normal size photo
-                    alt="Normal Size"
-                    fill
-                    style={{ objectFit: 'cover', borderRadius: '8px' }}
-                  />
-                </div>
-              ) : (
-                <textarea
-                  placeholder="Enter your writing"
-                  value={customWriting}
-                  onChange={(e) => setCustomWriting(e.target.value)}
-                  style={{ ...styles.input, height: '150px' }}
-                />
-              )}
+            <div style={styles.infoBox}>
+              <h1 style={{ color: '#39FF14' }}>Custom Designs Available</h1>
+              <h3>1.8m x 1m, 2m, 3m, 5m</h3>
+              <p>
+                Choose standard size or fully customise your banner
+                to suit your special event, sporting milestone, or celebration.
+              </p>
             </div>
           </div>
+        </section>
 
-          {/* Right: Enquiry Form */}
-          <div style={styles.formColumn}>
-            <h2>Enquiry Form</h2>
+        {/* Enquiry Form Centered */}
+        <section style={styles.optionsFormSection}>
+          <div style={styles.formColumnCentered}>
+            <h2 style={styles.sectionHeading}>Enquiry Form</h2>
+
             <form style={styles.form}>
               <input type="text" placeholder="Name" style={styles.input} required />
               <input type="tel" placeholder="Phone" style={styles.input} />
               <input type="email" placeholder="Email" style={styles.input} required />
-              <input type="date" placeholder="Date Needed" style={styles.input} />
+              <input type="date" style={styles.input} />
               <input type="number" placeholder="Quantity" style={styles.input} />
               <input type="file" style={styles.input} />
               <textarea placeholder="Comments" style={{ ...styles.input, height: '100px' }} />
-              <button type="submit" style={styles.submitButton}>Submit</button>
+
+              <button type="submit" style={styles.submitButton}>
+                Submit
+              </button>
             </form>
           </div>
-
         </section>
 
       </div>
@@ -118,19 +91,14 @@ export default function Home() {
 }
 
 const styles = {
-  banner: {
-    position: 'relative' as const,
-    width: '100%',
-    height: '600px',
-    backgroundColor: '#ccc',
+  pageWrapper: {
+    paddingTop: '4rem',
+    padding: '0 8rem',
     display: 'flex',
     flexDirection: 'column' as const,
-    justifyContent: 'center',
-    alignItems: 'center',
-    color: '#000',
-    textAlign: 'center' as const,
-    borderRadius: '12px',
-    marginTop: '1rem',
+    gap: '8rem',
+    backgroundColor: '#0B0B0B',
+    color: '#ffffff',
   },
 
   gridSection: {
@@ -141,49 +109,43 @@ const styles = {
   },
 
   infoSection: {
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#1A1A1A',
     padding: '2rem',
     borderRadius: '12px',
   },
 
-  optionsFormSection: {
+  infoGrid: {
     display: 'flex',
     gap: '2rem',
   },
 
-  optionsColumn: {
+  infoBox: {
     flex: 1,
+    backgroundColor: '#111',
+    padding: '1.5rem',
+    borderRadius: '10px',
+  },
+
+  optionsFormSection: {
+    display: 'flex',
+    justifyContent: 'center',
+    paddingBottom: '4rem',
+  },
+
+  sectionHeading: {
+    color: '#39FF14',
+    textAlign: 'center' as const,
+    marginBottom: '1rem',
+  },
+
+  formColumnCentered: {
+    flex: '0 0 500px', // fixed width
+    backgroundColor: '#1A1A1A',
+    padding: '1rem',
+    borderRadius: '12px',
     display: 'flex',
     flexDirection: 'column' as const,
     gap: '1rem',
-  },
-
-  optionButtons: {
-    display: 'flex',
-    gap: '1rem',
-  },
-
-  optionButton: {
-    padding: '0.5rem 1rem',
-    borderRadius: '6px',
-    border: 'none',
-    cursor: 'pointer',
-  },
-
-  photoPreview: {
-    marginTop: '1rem',
-    width: '100%',
-    height: '400px',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-
-  formColumn: {
-    flex: 1,
-    backgroundColor: '#eee',
-    padding: '1rem',
-    borderRadius: '12px',
   },
 
   form: {
@@ -195,7 +157,9 @@ const styles = {
   input: {
     padding: '0.75rem 1rem',
     borderRadius: '6px',
-    border: '1px solid #ccc',
+    border: '1px solid #333',
+    backgroundColor: '#111',
+    color: '#fff',
     fontSize: '16px',
   },
 
@@ -203,10 +167,11 @@ const styles = {
     padding: '0.75rem 1rem',
     borderRadius: '6px',
     border: 'none',
-    backgroundColor: '#0d6efd',
-    color: '#fff',
+    backgroundColor: '#39FF14',
+    color: '#000',
     fontSize: '16px',
     cursor: 'pointer',
+    fontWeight: 'bold',
   },
 
   imageWrapper: {
@@ -215,5 +180,29 @@ const styles = {
     height: '100%',
     borderRadius: '8px',
     overflow: 'hidden',
+  },
+
+  introSection: {
+    width: '100%',
+    padding: '2rem 0',
+    textAlign: 'center',
+    backgroundColor: '#0B0B0B',
+  },
+
+  introHeading: {
+    fontSize: '2.5rem',
+    margin: '0 0 1rem 0',
+    color: '#39FF14',
+  },
+
+  introText: {
+    fontSize: '1.25rem',
+    margin: 0,
+    color: '#ffffff',
+    maxWidth: '800px',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    paddingTop: '1rem',
+
   },
 };
