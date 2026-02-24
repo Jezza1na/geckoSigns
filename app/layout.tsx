@@ -2,21 +2,21 @@ import type { Metadata } from "next";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
 
-import Navbar from "./header";
-
+import Navbar from "./components/header";
+import Footer from "./components/footer";
 
 export const metadata: Metadata = {
-  title: "GeckoSigns",
+  title: "Milestone BANNERS",
+  icons: {
+    icon: "./",
+  },
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
-  const currentDate = new Date().toLocaleDateString();
-  const currentYear = new Date().getFullYear();
-
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <style>{`:root{--header:100px;}`}</style> 
+        <style>{`:root{--header:100px;}`}</style>
         <style>{`
           html, body {
             background-color: var(--bodyBackground, #0B0B0B);
@@ -51,36 +51,13 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
       </head>
 
       <body>
-        <div
-          style={{
-            minHeight: "100vh",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
+        <div className="d-flex flex-column min-vh-100">
           <Navbar />
 
-          <main>
+          <main className="flex-grow-1">
             {children}
           </main>
 
-          <footer
-            style={{
-              marginTop: "auto",
-              borderTop: "1px solid var(--bodyBackgroundBorder)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-              }}
-            >
-              <span>GeckoSigns</span>
-              <span>&copy; {currentYear}</span>
-              <span suppressHydrationWarning>{currentDate}</span>
-            </div>
-          </footer>
         </div>
       </body>
     </html>

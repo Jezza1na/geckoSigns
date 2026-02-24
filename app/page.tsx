@@ -3,13 +3,27 @@
 import ClientLayout from '@/app/ClientLayout';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 export default function Home() {
+  const [fileName, setFileName] = useState('');
+  const [bannerType, setBannerType] = useState<string[]>([]);
+  const [bannerTypeError, setBannerTypeError] = useState(false);
+
+  const handleBannerTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      setBannerType((prev) => [...prev, value]);
+    } else {
+      setBannerType((prev) => prev.filter((v) => v !== value));
+    }
+  };
+
   return (
     <ClientLayout>
       <div style={styles.pageWrapper}>
 
-        {/* Heading + Intro Text below header */}
+        {/* Heading + Intro */}
         <section style={styles.introSection}>
           <h1 style={styles.introHeading}>Welcome to Milestone BANNERS</h1>
           <p style={styles.introText}>
@@ -17,15 +31,15 @@ export default function Home() {
           </p>
         </section>
 
-        {/* 8 Product Photos (Animated Slide In) */}
+        {/* Product Photos */}
         <section style={styles.gridSection}>
           {[...Array(8)].map((_, idx) => {
-            const isLeftColumn = idx % 2 === 0;
+            const isLeft = idx % 2 === 0;
             return (
               <motion.div
                 key={idx}
                 style={styles.imageWrapper}
-                initial={{ x: isLeftColumn ? -200 : 200, opacity: 0 }}
+                initial={{ x: isLeft ? -200 : 200, opacity: 0 }}
                 whileInView={{ x: 0, opacity: 1 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -41,46 +55,97 @@ export default function Home() {
           })}
         </section>
 
-        {/* Info Section - 2 Columns */}
+        {/* Info Section */}
         <section style={styles.infoSection}>
           <div style={styles.infoGrid}>
             <div style={styles.infoBox}>
               <h1 style={{ color: '#39FF14' }}>Standard size</h1>
               <h3>1.8m x 4m</h3>
-              <p>
-                Our milestone banners are normally printed at our standard size of 1.8m X 4m. All our run through banners use durable,
-                weather-resistant materials designed to last indoors and outdoors.
-              </p>
+              <p>Our milestone banners are normally printed at our standard size of 1.8m X 4m. All banners use durable, weather-resistant materials.</p>
             </div>
-
             <div style={styles.infoBox}>
               <h1 style={{ color: '#39FF14' }}>Custom Designs Available</h1>
               <h3>1.8m x 1m, 2m, 3m, 5m</h3>
-              <p>
-                Choose standard size or fully customise your banner
-                to suit your special event, sporting milestone, or celebration.
-              </p>
+              <p>Choose standard size or fully customise your banner for your special event or celebration.</p>
             </div>
           </div>
         </section>
 
-        {/* Enquiry Form Centered */}
+        {/* Enquiry Form */}
         <section style={styles.optionsFormSection}>
           <div style={styles.formColumnCentered}>
             <h2 style={styles.sectionHeading}>Enquiry Form</h2>
 
-            <form style={styles.form}>
-              <input type="text" placeholder="Name" style={styles.input} required />
-              <input type="tel" placeholder="Phone" style={styles.input} />
-              <input type="email" placeholder="Email" style={styles.input} required />
-              <input type="date" style={styles.input} />
-              <input type="number" placeholder="Quantity" style={styles.input} />
-              <input type="file" style={styles.input} />
-              <textarea placeholder="Comments" style={{ ...styles.input, height: '100px' }} />
+            <form
+              style={styles.form}
+              onSubmit={async (e) => {
+                e.preventDefault();
 
-              <button type="submit" style={styles.submitButton}>
-                Submit
-              </button>
+                if (bannerType.length === 0) {
+                  setBannerTypeError(true);
+                  return;
+                } else {
+                  setBannerTypeError(false);
+                }
+
+                const formData = new FormData(e.currentTarget);
+                bannerType.forEach((type) => formData.append('bannerType', type));
+
+                const res = await fetch('/api/enquiry', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (data.success) {
+                  alert('Enquiry sent successfully!');
+                  e.currentTarget.reset();
+                  setFileName('');
+                  setBannerType([]);
+                } else {
+                  alert(data.error || 'Something went wrong');
+                }
+              }}
+            >
+              <input type="text" name="name" placeholder="Name" style={styles.input} required />
+              <input type="tel" name="phone" placeholder="Phone" style={styles.input} />
+              <input type="email" name="email" placeholder="Email" style={styles.input} required />
+              <input type="date" name="date" style={styles.input} />
+              <input type="number" name="quantity" placeholder="Quantity" style={styles.input} />
+
+              {/* Normal / Custom Checkboxes */}
+              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
+                {['Normal', 'Custom'].map((type) => (
+                  <label key={type} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <input
+                      type="checkbox"
+                      value={type}
+                      checked={bannerType.includes(type)}
+                      onChange={handleBannerTypeChange}
+                    />
+                    {type}
+                  </label>
+                ))}
+              </div>
+              {bannerTypeError && <p style={{ color: 'red' }}>Please select at least one option.</p>}
+
+              {/* File input */}
+              <input
+                type="file"
+                name="file"
+                accept="image/*"
+                style={styles.input}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    if (!file.type.startsWith('image/')) { alert('Only image files allowed'); return; }
+                    if (file.size > 5 * 1024 * 1024) { alert('Max file size 5MB'); return; }
+                    setFileName(file.name);
+                  }
+                }}
+              />
+              {fileName && <p>Selected file: {fileName}</p>}
+
+              <textarea name="comments" placeholder="Comments" style={{ ...styles.input, height: '100px' }} />
+
+              <button type="submit" style={styles.submitButton}>Submit</button>
             </form>
           </div>
         </section>
@@ -139,7 +204,7 @@ const styles = {
   },
 
   formColumnCentered: {
-    flex: '0 0 500px', // fixed width
+    flex: '0 0 500px',
     backgroundColor: '#1A1A1A',
     padding: '1rem',
     borderRadius: '12px',
@@ -185,7 +250,7 @@ const styles = {
   introSection: {
     width: '100%',
     padding: '2rem 0',
-    textAlign: 'center',
+    textAlign: 'center' as const,
     backgroundColor: '#0B0B0B',
   },
 
@@ -203,6 +268,5 @@ const styles = {
     marginLeft: 'auto',
     marginRight: 'auto',
     paddingTop: '1rem',
-
   },
 };
