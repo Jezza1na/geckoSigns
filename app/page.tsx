@@ -151,6 +151,22 @@ export default function Home() {
         </section>
 
       </div>
+
+      {/* Installation Video Section */}
+<section style={styles.videoSection}>
+  <h2 style={styles.videoHeading}>How to install your Banner</h2>
+
+  <div style={styles.videoWrapper}>
+    <video
+      controls
+      style={styles.video}
+    >
+      <source src="/videos/banner-install.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</section>
+
     </ClientLayout>
   );
 }
@@ -269,4 +285,32 @@ const styles = {
     marginRight: 'auto',
     paddingTop: '1rem',
   },
+
+  videoSection: {
+  display: 'flex',
+  flexDirection: 'column' as const,
+  alignItems: 'center',
+  gap: '2rem',
+  paddingBottom: '4rem',
+},
+
+videoHeading: {
+  color: '#39FF14',
+  fontSize: '2rem',
+  textAlign: 'center' as const,
+},
+
+videoWrapper: {
+  width: '100%',
+  maxWidth: '900px',
+  borderRadius: '12px',
+  overflow: 'hidden',
+  boxShadow: '0 0 20px rgba(57, 255, 20, 0.2)',
+},
+
+video: {
+  width: '100%',
+  height: 'auto',
+  display: 'block',
+},
 };
