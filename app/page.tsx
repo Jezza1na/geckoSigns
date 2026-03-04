@@ -4,6 +4,7 @@ import ClientLayout from '@/app/ClientLayout';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import type { CSSProperties } from 'react';
 
 export default function Home() {
   const [fileName, setFileName] = useState('');
@@ -32,7 +33,7 @@ export default function Home() {
         </section>
 
         {/* Product Photos */}
-        <section style={styles.gridSection}>
+        <section id="first-row" style={styles.gridSection}>
           {[...Array(8)].map((_, idx) => {
             const isLeft = idx % 2 === 0;
             return (
@@ -150,33 +151,33 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Installation Video Section */}
+        <section style={styles.videoSection}>
+          <h2 style={styles.videoHeading}>How to install your Banner</h2>
+
+          <div style={styles.videoWrapper}>
+            <video
+              controls
+              style={styles.video}
+            >
+              <source src="/videos/banner-install.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </section>
+
       </div>
-
-      {/* Installation Video Section */}
-<section style={styles.videoSection}>
-  <h2 style={styles.videoHeading}>How to install your Banner</h2>
-
-  <div style={styles.videoWrapper}>
-    <video
-      controls
-      style={styles.video}
-    >
-      <source src="/videos/banner-install.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
-</section>
-
     </ClientLayout>
   );
 }
 
-const styles = {
+const styles: { [key: string]: CSSProperties } = {
   pageWrapper: {
     paddingTop: '4rem',
-    padding: '0 8rem',
+    paddingLeft: 'clamp(1rem, 5vw, 8rem)',
+    paddingRight: 'clamp(1rem, 5vw, 8rem)',
     display: 'flex',
-    flexDirection: 'column' as const,
+    flexDirection: 'column',
     gap: '8rem',
     backgroundColor: '#0B0B0B',
     color: '#ffffff',
@@ -215,7 +216,7 @@ const styles = {
 
   sectionHeading: {
     color: '#39FF14',
-    textAlign: 'center' as const,
+    textAlign: 'center',
     marginBottom: '1rem',
   },
 
@@ -225,13 +226,13 @@ const styles = {
     padding: '1rem',
     borderRadius: '12px',
     display: 'flex',
-    flexDirection: 'column' as const,
+    flexDirection: 'column',
     gap: '1rem',
   },
 
   form: {
     display: 'flex',
-    flexDirection: 'column' as const,
+    flexDirection: 'column',
     gap: '1rem',
   },
 
@@ -256,7 +257,7 @@ const styles = {
   },
 
   imageWrapper: {
-    position: 'relative' as const,
+    position: 'relative',
     width: '100%',
     height: '100%',
     borderRadius: '8px',
@@ -266,7 +267,7 @@ const styles = {
   introSection: {
     width: '100%',
     padding: '2rem 0',
-    textAlign: 'center' as const,
+    textAlign: 'center',
     backgroundColor: '#0B0B0B',
   },
 
@@ -287,30 +288,30 @@ const styles = {
   },
 
   videoSection: {
-  display: 'flex',
-  flexDirection: 'column' as const,
-  alignItems: 'center',
-  gap: '2rem',
-  paddingBottom: '4rem',
-},
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '2rem',
+    paddingBottom: '4rem',
+  },
 
-videoHeading: {
-  color: '#39FF14',
-  fontSize: '2rem',
-  textAlign: 'center' as const,
-},
+  videoHeading: {
+    color: '#39FF14',
+    fontSize: '2rem',
+    textAlign: 'center',
+  },
 
-videoWrapper: {
-  width: '100%',
-  maxWidth: '900px',
-  borderRadius: '12px',
-  overflow: 'hidden',
-  boxShadow: '0 0 20px rgba(57, 255, 20, 0.2)',
-},
+  videoWrapper: {
+    width: '100%',
+    maxWidth: '900px',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    boxShadow: '0 0 20px rgba(57, 255, 20, 0.2)',
+  },
 
-video: {
-  width: '100%',
-  height: 'auto',
-  display: 'block',
-},
+  video: {
+    width: '100%',
+    height: 'auto',
+    display: 'block',
+  },
 };
