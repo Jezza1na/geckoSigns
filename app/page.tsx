@@ -10,6 +10,7 @@ export default function Home() {
   const [fileName, setFileName] = useState('');
   const [bannerType, setBannerType] = useState<string[]>([]);
   const [bannerTypeError, setBannerTypeError] = useState(false);
+  const [activeImage, setActiveImage] = useState<number | null>(null);
 
   const handleBannerTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -38,20 +39,21 @@ export default function Home() {
             const isLeft = idx % 2 === 0;
             return (
               <motion.div
-                key={idx}
-                style={styles.imageWrapper}
-                initial={{ x: isLeft ? -200 : 200, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
-                viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.8, ease: 'easeOut' }}
-              >
-                <Image
-                  src={`/images/productImg${idx + 1}.jpeg`}
-                  alt={`Photo ${idx + 1}`}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                />
-              </motion.div>
+  key={idx}
+  style={styles.imageWrapper}
+  initial={{ x: isLeft ? -200 : 200, opacity: 0 }}
+  whileInView={{ x: 0, opacity: 1 }}
+  viewport={{ once: true, amount: 0.3 }}
+  transition={{ duration: 0.8, ease: 'easeOut' }}
+  onClick={() => setActiveImage(idx)}
+>
+  <Image
+    src={`/images/productImg${idx + 1}.jpeg`}
+    alt={`Photo ${idx + 1}`}
+    fill
+    style={{ objectFit: 'cover', cursor: 'pointer' }}
+  />
+</motion.div>
             );
           })}
         </section>
@@ -165,7 +167,32 @@ export default function Home() {
             </video>
           </div>
         </section>
+{activeImage !== null && (
+  <div style={styles.lightboxOverlay} onClick={() => setActiveImage(null)}>
+    <button
+      style={styles.closeButton}
+      onClick={() => setActiveImage(null)}
+    >
+      ✕
+    </button>
 
+    <motion.div
+      style={styles.lightboxImageWrapper}
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.8, opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <Image
+        src={`/images/productImg${activeImage + 1}.jpeg`}
+        alt="Full view"
+        fill
+        style={{ objectFit: 'contain' }}
+      />
+    </motion.div>
+  </div>
+)}
       </div>
     </ClientLayout>
   );
@@ -184,11 +211,10 @@ const styles: { [key: string]: CSSProperties } = {
   },
 
   gridSection: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    gridTemplateRows: 'repeat(4, 400px)',
-    gap: '1rem',
-  },
+  display: 'grid',
+  gridTemplateColumns: 'repeat(2, 1fr)',
+  gap: '1rem',
+},
 
   infoSection: {
     backgroundColor: '#1A1A1A',
@@ -257,12 +283,12 @@ const styles: { [key: string]: CSSProperties } = {
   },
 
   imageWrapper: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-    borderRadius: '8px',
-    overflow: 'hidden',
-  },
+  position: 'relative',
+  width: '100%',
+  aspectRatio: '16 / 9',
+  borderRadius: '8px',
+  overflow: 'hidden',
+},
 
   introSection: {
     width: '100%',
@@ -314,4 +340,35 @@ const styles: { [key: string]: CSSProperties } = {
     height: 'auto',
     display: 'block',
   },
+lightboxOverlay: {
+  position: 'fixed',
+  top: 0,
+  left: 0,
+  width: '100vw',
+  height: '100vh',
+  backgroundColor: 'rgba(0,0,0,0.9)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 9999,
+},
+
+lightboxImageWrapper: {
+  position: 'relative',
+  width: '90vw',
+  height: '90vh',
+},
+
+closeButton: {
+  position: 'absolute',
+  top: '20px',
+  right: '30px',
+  fontSize: '2rem',
+  background: 'none',
+  border: 'none',
+  color: '#fff',
+  cursor: 'pointer',
+  zIndex: 10000,
+},
+
 };

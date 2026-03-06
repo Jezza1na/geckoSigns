@@ -38,7 +38,7 @@ export default function Navbar() {
       setEyesClosed(true);
       // Close eyes for 175ms
       blinkTimeoutRef.current = setTimeout(() => setEyesClosed(false), 175);
-    }, 4000);
+    }, 2000);
   };
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function Navbar() {
     setTimeout(() => {
       setEyesOpenStrike(false);
       startBlinking(); // restart fresh blink interval
-    }, 2000);
+    }, 1000);
 
     const rect = headerRef.current.getBoundingClientRect();
     const startX = rect.left + rect.width * TONGUE_START_X_RATIO;
