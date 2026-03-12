@@ -1,6 +1,18 @@
 .header {
-  position: relative;
-  width: 100%;
+  position: relative;   /* for overlay elements */
+  width: 100vw;         /* full viewport width */
+  max-width: 100%;      /* prevent horizontal scroll */
+  height: var(--header-height, 100px); /* can adjust with media queries */
+  min-height: 60px;     /* optional mobile minimum */
+  background-color: #0B0B0B; 
+  overflow: hidden;     /* ensures content stays inside */
+}
+
+@media (max-width: 768px) {
+  .header {
+    min-height: 60px; /* smaller on mobile */
+    padding: 0.5rem;
+  }
 }
 
 .siteName {
@@ -11,7 +23,13 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 1rem;
+  gap: 1rem; /* 1rem = 16px by default */
+}
+
+@media (max-width: 768px) {
+  .rightContainer {
+    gap: 0.5rem;
+  }
 }
 
 .toggleContainer {
@@ -19,18 +37,26 @@
   align-items: center;
 }
 
-/* Toggle Switch */
 .switch {
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 22px;
+  width: 2.5rem; /* ~40px */
+  height: 1.4rem; /* ~22px */
 }
 
-.switch > input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+.thumb {
+  position: absolute;
+  bottom: 0.2rem;
+  left: 0.15rem;
+  width: 1rem;
+  height: 1rem;
+  background: #fff;
+  border-radius: 50%;
+  transition: left 0.3s;
+}
+
+.switch input:checked ~ .thumb {
+  left: calc(100% - 1rem - 0.15rem); /* moves thumb to other side */
 }
 
 .track {
@@ -39,17 +65,6 @@
   background: #ccc;
   border-radius: 20px;
   transition: background 0.3s;
-}
-
-.thumb {
-  position: absolute;
-  bottom: 3px;
-  left: 2px;
-  height: 16px;
-  width: 16px;
-  background: #fff;
-  border-radius: 50%;
-  transition: left 0.3s;
 }
 
 .switch input:checked + .track {
@@ -63,6 +78,7 @@
 /* Icons */
 .iconGrid {
   display: flex;
+  flex-wrap: wrap; /* wrap icons on small screens */
   gap: 0.75rem;
 }
 
@@ -73,13 +89,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 2rem; /* ensures touch-friendly size */
+  min-height: 2rem;
 }
 
 /* Banner Image (no cropping) */
 .bannerImage {
   width: 100%;
-  height: auto;
+  height: auto;       /* preserves aspect ratio */
   display: block;
+  object-fit: cover;  /* fills width without distortion */
 }
 
 /* Overlay content sits on top */
@@ -87,10 +106,20 @@
   position: absolute;
   top: 0;
   right: 0;
+  width: auto;        /* no fixed width, adapts */
   height: 100%;
   display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
   padding: 1rem 2rem;
+  gap: 0.5rem;
   z-index: 2;
+}
+
+@media (max-width: 768px) {
+  .overlayContent {
+    padding: 0.5rem 1rem;
+    gap: 0.25rem;
+  }
 }

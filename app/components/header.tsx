@@ -15,6 +15,7 @@ export default function Navbar() {
     visible: false,
   });
 
+  const tongueAnimatingRef = useRef(false);
   const headerRef = useRef<HTMLDivElement>(null);
 
   // Blink tracking
@@ -30,13 +31,11 @@ export default function Navbar() {
   /* Blink Logic                   */
   /* ============================= */
   const startBlinking = () => {
-    // Clear any previous blink
     if (blinkIntervalRef.current) clearInterval(blinkIntervalRef.current);
     if (blinkTimeoutRef.current) clearTimeout(blinkTimeoutRef.current);
 
     blinkIntervalRef.current = setInterval(() => {
       setEyesClosed(true);
-      // Close eyes for 175ms
       blinkTimeoutRef.current = setTimeout(() => setEyesClosed(false), 175);
     }, 2000);
   };
@@ -54,16 +53,13 @@ export default function Navbar() {
   /* ============================= */
   const fireTongue = (clientX: number, clientY: number) => {
     if (!headerRef.current) return;
+    if (tongueAnimatingRef.current) return; // prevent glitch
 
-    // Reset blink entirely
-    if (blinkIntervalRef.current) clearInterval(blinkIntervalRef.current);
-    if (blinkTimeoutRef.current) clearTimeout(blinkTimeoutRef.current);
+    tongueAnimatingRef.current = true;
 
+    // Eyes strike
     setEyesOpenStrike(true);
-    setTimeout(() => {
-      setEyesOpenStrike(false);
-      startBlinking(); // restart fresh blink interval
-    }, 1000);
+    setTimeout(() => setEyesOpenStrike(false), 1000);
 
     const rect = headerRef.current.getBoundingClientRect();
     const startX = rect.left + rect.width * TONGUE_START_X_RATIO;
@@ -111,6 +107,7 @@ export default function Navbar() {
             if (retract >= steps) {
               clearInterval(retractInterval);
               setTongue((t) => ({ ...t, visible: false }));
+              tongueAnimatingRef.current = false; // done
             }
           }, 10);
         }, 500);
