@@ -119,15 +119,41 @@ export default function Navbar() {
   /* Mouse + Touch Events          */
   /* ============================= */
   useEffect(() => {
+    let touchStartY: number | null = null;
+    let touchMoved = false;
+
     const handleMouseDown = (e: MouseEvent) => fireTongue(e.clientX, e.clientY);
-    const handleTouchStart = (e: TouchEvent) => fireTongue(e.touches[0].clientX, e.touches[0].clientY);
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchMoved = false;
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (touchStartY !== null && Math.abs(touch.clientY - touchStartY) > 10) {
+        touchMoved = true; // scroll detected
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (!touchMoved && touchStartY !== null) {
+        const touch = e.changedTouches[0];
+        fireTongue(touch.clientX, touch.clientY);
+      }
+      touchStartY = null;
+    };
 
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleTouchEnd);
 
     return () => {
       window.removeEventListener('mousedown', handleMouseDown);
       window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
   }, []);
 
@@ -171,25 +197,25 @@ export default function Navbar() {
 
 const styles: { [key: string]: CSSProperties } = {
   header: {
-  width: '100%',
-  position: 'relative',
-  backgroundColor: '#0B0B0B',
-  overflow: 'hidden',
-},
+    width: '100%',
+    position: 'relative',
+    backgroundColor: '#0B0B0B',
+    overflow: 'hidden',
+  },
   bannerImage: {
-  width: '100%',
-  height: 'auto',
-  display: 'block',
-},
+    width: '100%',
+    height: 'auto',
+    display: 'block',
+  },
   overlayImage: {
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  objectFit: 'contain',
-  pointerEvents: 'none',
-},
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'contain',
+    pointerEvents: 'none',
+  },
   tongueSvg: {
     position: 'fixed',
     top: 0,

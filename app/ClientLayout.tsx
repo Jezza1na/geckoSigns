@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Cookies from 'js-cookie';
 import CookieConsent from './components/CookieConsent';
-import Footer from './components/footer'; // Import the new Footer
+import Footer from './components/footer';
 
 type Props = { children: React.ReactNode };
 
