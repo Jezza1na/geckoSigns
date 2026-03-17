@@ -53,7 +53,7 @@ export default function Navbar() {
   /* ============================= */
   const fireTongue = (clientX: number, clientY: number) => {
     if (!headerRef.current) return;
-    if (tongueAnimatingRef.current) return; // prevent glitch
+    if (tongueAnimatingRef.current) return;
 
     tongueAnimatingRef.current = true;
 
@@ -107,7 +107,7 @@ export default function Navbar() {
             if (retract >= steps) {
               clearInterval(retractInterval);
               setTongue((t) => ({ ...t, visible: false }));
-              tongueAnimatingRef.current = false; // done
+              tongueAnimatingRef.current = false;
             }
           }, 10);
         }, 500);
@@ -171,19 +171,25 @@ export default function Navbar() {
 
 const styles: { [key: string]: CSSProperties } = {
   header: {
-    width: '100%',
-    position: 'relative',
-    backgroundColor: '#0B0B0B',
-  },
-  bannerImage: { width: '100%', height: 'auto', display: 'block' },
+  width: '100%',
+  position: 'relative',
+  backgroundColor: '#0B0B0B',
+  overflow: 'hidden',
+},
+  bannerImage: {
+  width: '100%',
+  height: 'auto',
+  display: 'block',
+},
   overlayImage: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    pointerEvents: 'none',
-  },
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  objectFit: 'contain',
+  pointerEvents: 'none',
+},
   tongueSvg: {
     position: 'fixed',
     top: 0,

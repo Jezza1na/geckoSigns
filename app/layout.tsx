@@ -16,12 +16,10 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
         <style>{`:root{--header:100px;}`}</style>
       </head>
 
-      <body>
-        <div className="d-flex flex-column min-vh-100">
-          <Navbar />
-          <main className="flex-grow-1">{children}</main>
-        </div>
-      </body>
+      <body style={{ margin: 0 }}>
+  <Navbar />
+  {children}
+</body>
     </html>
   );
 };

@@ -31,14 +31,11 @@ export default function ClientLayout({ children }: Props) {
     }
   }, [pathname]);
 
-  return (
-    <div className="d-flex flex-column min-vh-100" style={{ background: 'var(--bodyBackground)', color: 'var(--textColour)' }}>
-      <main className="flex-grow-1">
-        {children}
-      </main>
-
-      <Footer /> {/* Footer at bottom */}
-      <CookieConsent /> {/* Cookie consent overlay */}
-    </div>
-  );
+return (
+  <>
+    {children}
+    <Footer />
+    <CookieConsent />
+  </>
+);
 }

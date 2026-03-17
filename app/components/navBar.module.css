@@ -1,16 +1,16 @@
 .header {
-  position: relative;   /* for overlay elements */
-  width: 100vw;         /* full viewport width */
-  max-width: 100%;      /* prevent horizontal scroll */
-  height: var(--header-height, 100px); /* can adjust with media queries */
-  min-height: 60px;     /* optional mobile minimum */
+  position: relative;
+  width: 100vw;
+  max-width: 100%;
+  height: var(--header-height);
+  min-height: 60px;
   background-color: #0B0B0B; 
-  overflow: hidden;     /* ensures content stays inside */
+  overflow: hidden;
 }
 
 @media (max-width: 768px) {
   .header {
-    min-height: 60px; /* smaller on mobile */
+    min-height: 60px;
     padding: 0.5rem;
   }
 }
@@ -23,7 +23,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 1rem; /* 1rem = 16px by default */
+  gap: 1rem;
 }
 
 @media (max-width: 768px) {
@@ -40,8 +40,8 @@
 .switch {
   position: relative;
   display: inline-block;
-  width: 2.5rem; /* ~40px */
-  height: 1.4rem; /* ~22px */
+  width: 2.5rem;
+  height: 1.4rem;
 }
 
 .thumb {
@@ -56,7 +56,7 @@
 }
 
 .switch input:checked ~ .thumb {
-  left: calc(100% - 1rem - 0.15rem); /* moves thumb to other side */
+  left: calc(100% - 1rem - 0.15rem);
 }
 
 .track {
@@ -68,17 +68,16 @@
 }
 
 .switch input:checked + .track {
-  background: #39FF14; /* Gecko green */
+  background: #39FF14;
 }
 
 .switch input:checked ~ .thumb {
   left: 22px;
 }
 
-/* Icons */
 .iconGrid {
   display: flex;
-  flex-wrap: wrap; /* wrap icons on small screens */
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
@@ -89,24 +88,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 2rem; /* ensures touch-friendly size */
+  min-width: 2rem;
   min-height: 2rem;
 }
 
-/* Banner Image (no cropping) */
 .bannerImage {
-  width: 100%;
-  height: auto;       /* preserves aspect ratio */
-  display: block;
-  object-fit: cover;  /* fills width without distortion */
+  object-fit: contain;
 }
 
-/* Overlay content sits on top */
 .overlayContent {
   position: absolute;
   top: 0;
   right: 0;
-  width: auto;        /* no fixed width, adapts */
+  width: auto;
   height: 100%;
   display: flex;
   flex-direction: column;

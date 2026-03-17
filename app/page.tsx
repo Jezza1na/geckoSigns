@@ -41,7 +41,7 @@ export default function Home() {
               <motion.div
   key={idx}
   style={styles.imageWrapper}
-  initial={{ x: isLeft ? -200 : 200, opacity: 0 }}
+  initial={{ x: isLeft ? -100 : 100, opacity: 0 }}
   whileInView={{ x: 0, opacity: 1 }}
   viewport={{ once: true, amount: 0.3 }}
   transition={{ duration: 0.8, ease: 'easeOut' }}
@@ -75,83 +75,87 @@ export default function Home() {
         </section>
 
         {/* Enquiry Form */}
-        <section style={styles.optionsFormSection}>
-          <div style={styles.formColumnCentered}>
-            <h2 style={styles.sectionHeading}>Enquiry Form</h2>
+<section style={styles.optionsFormSection}>
+  <div style={styles.formColumnCentered}>
+    <h2 style={styles.sectionHeading}>Enquiry Form</h2>
 
-            <form
-              style={styles.form}
-              onSubmit={async (e) => {
-                e.preventDefault();
+    <form
+      style={styles.form}
+      onSubmit={async (e) => {
+        e.preventDefault();
 
-                if (bannerType.length === 0) {
-                  setBannerTypeError(true);
-                  return;
-                } else {
-                  setBannerTypeError(false);
-                }
+        if (bannerType.length === 0) {
+          setBannerTypeError(true);
+          return;
+        } else {
+          setBannerTypeError(false);
+        }
 
-                const formData = new FormData(e.currentTarget);
-                bannerType.forEach((type) => formData.append('bannerType', type));
+        const formData = new FormData(e.currentTarget);
+        bannerType.forEach((type) => formData.append('bannerType', type));
 
-                const res = await fetch('/api/enquiry', { method: 'POST', body: formData });
-                const data = await res.json();
+        const res = await fetch('/api/enquiry', { method: 'POST', body: formData });
+        const data = await res.json();
 
-                if (data.success) {
-                  alert('Enquiry sent successfully!');
-                  e.currentTarget.reset();
-                  setFileName('');
-                  setBannerType([]);
-                } else {
-                  alert(data.error || 'Something went wrong');
-                }
-              }}
-            >
-              <input type="text" name="name" placeholder="Name" style={styles.input} required />
-              <input type="tel" name="phone" placeholder="Phone" style={styles.input} />
-              <input type="email" name="email" placeholder="Email" style={styles.input} required />
-              <input type="date" name="date" style={styles.input} />
-              <input type="number" name="quantity" placeholder="Quantity" style={styles.input} />
+        if (data.success) {
+          alert('Enquiry sent successfully!');
+          e.currentTarget.reset();
+          setFileName('');
+          setBannerType([]);
+        } else {
+          alert(data.error || 'Something went wrong');
+        }
+      }}
+    >
+      <input type="text" name="name" placeholder="Name" style={styles.input} required />
+      <input type="tel" name="phone" placeholder="Phone" style={styles.input} />
+      <input type="email" name="email" placeholder="Email" style={styles.input} required />
+      <input type="date" name="date" style={styles.input} />
+      <input type="number" name="quantity" placeholder="Quantity" min={1} style={styles.input} />
 
-              {/* Normal / Custom Checkboxes */}
-              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-                {['Normal', 'Custom'].map((type) => (
-                  <label key={type} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <input
-                      type="checkbox"
-                      value={type}
-                      checked={bannerType.includes(type)}
-                      onChange={handleBannerTypeChange}
-                    />
-                    {type}
-                  </label>
-                ))}
-              </div>
-              {bannerTypeError && <p style={{ color: 'red' }}>Please select at least one option.</p>}
+      {/* Normal / Custom Checkboxes */}
+      <div style={styles.checkboxGroup}>
+        {['Normal', 'Custom'].map((type) => (
+          <label key={type} style={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              value={type}
+              checked={bannerType.includes(type)}
+              onChange={handleBannerTypeChange}
+            />
+            {type}
+          </label>
+        ))}
+      </div>
+      {bannerTypeError && <p style={{ color: 'red' }}>Please select at least one option.</p>}
 
-              {/* File input */}
-              <input
-                type="file"
-                name="file"
-                accept="image/*"
-                style={styles.input}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    if (!file.type.startsWith('image/')) { alert('Only image files allowed'); return; }
-                    if (file.size > 5 * 1024 * 1024) { alert('Max file size 5MB'); return; }
-                    setFileName(file.name);
-                  }
-                }}
-              />
-              {fileName && <p>Selected file: {fileName}</p>}
+      {/* File input */}
+      <input
+        type="file"
+        name="file"
+        accept="image/*"
+        style={styles.input}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) {
+            if (!file.type.startsWith('image/')) { alert('Only image files allowed'); return; }
+            if (file.size > 5 * 1024 * 1024) { alert('Max file size 5MB'); return; }
+            setFileName(file.name);
+          }
+        }}
+      />
+      {fileName && <p>Selected file: {fileName}</p>}
 
-              <textarea name="comments" placeholder="Comments" style={{ ...styles.input, height: '100px' }} />
+      <textarea
+        name="comments"
+        placeholder="Comments"
+        style={{ ...styles.input, minHeight: '100px', resize: 'vertical' }}
+      />
 
-              <button type="submit" style={styles.submitButton}>Submit</button>
-            </form>
-          </div>
-        </section>
+      <button type="submit" style={styles.submitButton}>Submit</button>
+    </form>
+  </div>
+</section>
 
         {/* Installation Video Section */}
         <section style={styles.videoSection}>
@@ -198,9 +202,10 @@ export default function Home() {
   );
 }
 
-const styles: { [key: string]: CSSProperties } = {
+const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+
+const styles: { [key: string]: React.CSSProperties } = {
   pageWrapper: {
-    paddingTop: '4rem',
     paddingLeft: 'clamp(1rem, 5vw, 8rem)',
     paddingRight: 'clamp(1rem, 5vw, 8rem)',
     display: 'flex',
@@ -208,13 +213,14 @@ const styles: { [key: string]: CSSProperties } = {
     gap: '8rem',
     backgroundColor: '#0B0B0B',
     color: '#ffffff',
+    overflowX: 'hidden',
   },
 
   gridSection: {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(2, 1fr)',
-  gap: '1rem',
-},
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+    gap: '1rem',
+  },
 
   infoSection: {
     backgroundColor: '#1A1A1A',
@@ -224,36 +230,44 @@ const styles: { [key: string]: CSSProperties } = {
 
   infoGrid: {
     display: 'flex',
-    gap: '2rem',
+    gap: isMobile ? '1rem' : '2rem',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    flexDirection: isMobile ? 'column' : 'row',
   },
 
   infoBox: {
-    flex: 1,
+    flex: isMobile ? '1 1 100%' : '1 1 300px',
     backgroundColor: '#111',
-    padding: '1.5rem',
+    padding: isMobile ? '1rem' : '1.5rem',
     borderRadius: '10px',
   },
 
   optionsFormSection: {
     display: 'flex',
     justifyContent: 'center',
-    paddingBottom: '4rem',
+    padding: isMobile ? '1rem 0.5rem' : '2rem 1rem',
+    backgroundColor: '#0B0B0B',
+    width: '100%',
   },
 
   sectionHeading: {
     color: '#39FF14',
     textAlign: 'center',
     marginBottom: '1rem',
+    fontSize: isMobile ? '1.5rem' : undefined,
   },
 
   formColumnCentered: {
-    flex: '0 0 500px',
+    width: '100%',
+    maxWidth: '500px',
     backgroundColor: '#1A1A1A',
-    padding: '1rem',
+    padding: isMobile ? '1rem 1rem' : '1rem 2rem',
     borderRadius: '12px',
     display: 'flex',
     flexDirection: 'column',
     gap: '1rem',
+    boxSizing: 'border-box',
   },
 
   form: {
@@ -283,12 +297,12 @@ const styles: { [key: string]: CSSProperties } = {
   },
 
   imageWrapper: {
-  position: 'relative',
-  width: '100%',
-  aspectRatio: '16 / 9',
-  borderRadius: '8px',
-  overflow: 'hidden',
-},
+    position: 'relative',
+    width: '100%',
+    aspectRatio: '16 / 9',
+    borderRadius: '8px',
+    overflow: 'hidden',
+  },
 
   introSection: {
     width: '100%',
@@ -298,16 +312,16 @@ const styles: { [key: string]: CSSProperties } = {
   },
 
   introHeading: {
-    fontSize: '2.5rem',
+    fontSize: isMobile ? '2rem' : '2.5rem',
     margin: '0 0 1rem 0',
     color: '#39FF14',
   },
 
   introText: {
-    fontSize: '1.25rem',
+    fontSize: isMobile ? '1rem' : '1.25rem',
     margin: 0,
     color: '#ffffff',
-    maxWidth: '800px',
+    maxWidth: isMobile ? '90%' : '800px',
     marginLeft: 'auto',
     marginRight: 'auto',
     paddingTop: '1rem',
@@ -323,13 +337,13 @@ const styles: { [key: string]: CSSProperties } = {
 
   videoHeading: {
     color: '#39FF14',
-    fontSize: '2rem',
+    fontSize: isMobile ? '1.5rem' : '2rem',
     textAlign: 'center',
   },
 
   videoWrapper: {
     width: '100%',
-    maxWidth: '900px',
+    maxWidth: isMobile ? '100%' : '900px',
     borderRadius: '12px',
     overflow: 'hidden',
     boxShadow: '0 0 20px rgba(57, 255, 20, 0.2)',
@@ -340,35 +354,35 @@ const styles: { [key: string]: CSSProperties } = {
     height: 'auto',
     display: 'block',
   },
-lightboxOverlay: {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  width: '100vw',
-  height: '100vh',
-  backgroundColor: 'rgba(0,0,0,0.9)',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  zIndex: 9999,
-},
 
-lightboxImageWrapper: {
-  position: 'relative',
-  width: '90vw',
-  height: '90vh',
-},
+  lightboxOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
 
-closeButton: {
-  position: 'absolute',
-  top: '20px',
-  right: '30px',
-  fontSize: '2rem',
-  background: 'none',
-  border: 'none',
-  color: '#fff',
-  cursor: 'pointer',
-  zIndex: 10000,
-},
+  lightboxImageWrapper: {
+    position: 'relative',
+    width: '90vw',
+    height: '90vh',
+  },
 
+  closeButton: {
+    position: 'absolute',
+    top: '20px',
+    right: '30px',
+    fontSize: '2rem',
+    background: 'none',
+    border: 'none',
+    color: '#fff',
+    cursor: 'pointer',
+    zIndex: 10000,
+  },
 };
