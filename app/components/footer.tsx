@@ -22,7 +22,7 @@ const Footer = () => {
               </a>
           </div>
           <div className="d-flex gap-2">
-            <a href="https://www.facebook.com/geckosignslilydale" target="_blank" rel="noopener noreferrer" style={{ color: '#39FF14' }}>
+            <a href="https://www.facebook.com/Milestonebannersbygecko/" target="_blank" rel="noopener noreferrer" style={{ color: '#39FF14' }}>
               <FaFacebookF size={24} />
             </a>
             <a href="https://www.instagram.com/gecko_signs/" target="_blank" rel="noopener noreferrer" style={{ color: '#39FF14' }}>
@@ -38,7 +38,7 @@ const Footer = () => {
         <div className="d-flex flex-column">
           <h5 style={{ color: '#39FF14' }}>Contact Us</h5>
           <span className="d-flex align-items-center gap-2">
-            <MdPhone /> 0412 605 539
+            <MdPhone /> 0419 414 270
           </span>
           <span>sam@geckosigns.net.au</span>
           <span>6/91-99 Beresford Rd, Lilydale VIC 3140</span>

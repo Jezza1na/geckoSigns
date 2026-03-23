@@ -29,7 +29,13 @@ export default function Home() {
         <section style={styles.introSection}>
           <h1 style={styles.introHeading}>Welcome to Milestone BANNERS</h1>
           <p style={styles.introText}>
-            Explore our premium run-through milestone banners. Custom sizes, premium materials, and designs for every celebration!
+            Celebrating your sporting achievement is stress-free and easy with our personalised breakthrough banners.
+          </p>
+          <p style={styles.introText}>
+            Each banner is custom designed, so no two banners are ever the same.
+          </p>
+          <p style={styles.introText}>
+            Our banners are made from durable, weather-resistant paper with vibrant colour designs that will withstand even the wettest, windiest day.
           </p>
         </section>
 
@@ -39,172 +45,226 @@ export default function Home() {
             const isLeft = idx % 2 === 0;
             return (
               <motion.div
-  key={idx}
-  style={styles.imageWrapper}
-  initial={{ x: isLeft ? -100 : 100, opacity: 0 }}
-  whileInView={{ x: 0, opacity: 1 }}
-  viewport={{ once: true, amount: 0.3 }}
-  transition={{ duration: 0.8, ease: 'easeOut' }}
-  onClick={() => setActiveImage(idx)}
->
-  <Image
-    src={`/images/productImg${idx + 1}.jpeg`}
-    alt={`Photo ${idx + 1}`}
-    fill
-    style={{ objectFit: 'cover', cursor: 'pointer' }}
-  />
-</motion.div>
+                key={idx}
+                style={styles.imageWrapper}
+                initial={{ x: isLeft ? -100 : 100, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                viewport={{ once: true, amount: 0.3 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+                onClick={() => setActiveImage(idx)}
+              >
+                <Image
+                  src={`/images/productImg${idx + 1}.jpeg`}
+                  alt={`Photo ${idx + 1}`}
+                  fill
+                  style={{ objectFit: 'cover', cursor: 'pointer' }}
+                />
+              </motion.div>
             );
           })}
         </section>
 
         {/* Info Section */}
-        <section style={styles.infoSection}>
-          <div style={styles.infoGrid}>
-            <div style={styles.infoBox}>
-              <h1 style={{ color: '#39FF14' }}>Standard size</h1>
-              <h3>1.8m x 4m</h3>
-              <p>Our milestone banners are normally printed at our standard size of 1.8m X 4m. All banners use durable, weather-resistant materials.</p>
-            </div>
-            <div style={styles.infoBox}>
-              <h1 style={{ color: '#39FF14' }}>Custom Designs Available</h1>
-              <h3>1.8m x 1m, 2m, 3m, 5m</h3>
-              <p>Choose standard size or fully customise your banner for your special event or celebration.</p>
-            </div>
-          </div>
-        </section>
+<section style={styles.infoSection}>
+  <div style={styles.infoGrid}>
 
-        {/* Enquiry Form */}
-<section style={styles.optionsFormSection}>
-  <div style={styles.formColumnCentered}>
-    <h2 style={styles.sectionHeading}>Enquiry Form</h2>
+    {/* Club Banner Box */}
+    <div style={styles.infoBox}>
+      <h1 style={{ color: '#39FF14', marginBottom: '1rem' }}>Club Banner</h1>
 
-    <form
-      style={styles.form}
-      onSubmit={async (e) => {
-        e.preventDefault();
+      <div style={styles.photoPriceWrapper}>
+        {/* Photo inside the box */}
+        <div style={styles.photoContainer}>
+          <Image
+            src="/images/textOnly.jpg" // insert your photo here
+            alt="Club Banner"
+            fill
+            style={{ objectFit: 'contain' }}
+          />
+        </div>
 
-        if (bannerType.length === 0) {
-          setBannerTypeError(true);
-          return;
-        } else {
-          setBannerTypeError(false);
-        }
-
-        const formData = new FormData(e.currentTarget);
-        bannerType.forEach((type) => formData.append('bannerType', type));
-
-        const res = await fetch('/api/enquiry', { method: 'POST', body: formData });
-        const data = await res.json();
-
-        if (data.success) {
-          alert('Enquiry sent successfully!');
-          e.currentTarget.reset();
-          setFileName('');
-          setBannerType([]);
-        } else {
-          alert(data.error || 'Something went wrong');
-        }
-      }}
-    >
-      <input type="text" name="name" placeholder="Name" style={styles.input} required />
-      <input type="tel" name="phone" placeholder="Phone" style={styles.input} />
-      <input type="email" name="email" placeholder="Email" style={styles.input} required />
-      <input type="date" name="date" style={styles.input} />
-      <input type="number" name="quantity" placeholder="Quantity" min={1} style={styles.input} />
-
-      {/* Normal / Custom Checkboxes */}
-      <div style={styles.checkboxGroup}>
-        {['Normal', 'Custom'].map((type) => (
-          <label key={type} style={styles.checkboxLabel}>
-            <input
-              type="checkbox"
-              value={type}
-              checked={bannerType.includes(type)}
-              onChange={handleBannerTypeChange}
-            />
-            {type}
-          </label>
-        ))}
+        {/* Prices outside, aligned toward the box edge */}
+        <div style={styles.priceColumn}>
+          <h3 style={styles.priceText}>2m - $120</h3>
+          <h3 style={styles.priceText}>4m - $220</h3>
+          <h3 style={styles.priceText}>Poles - $25</h3>
+        </div>
       </div>
-      {bannerTypeError && <p style={{ color: 'red' }}>Please select at least one option.</p>}
 
-      {/* File input */}
-      <input
-        type="file"
-        name="file"
-        accept="image/*"
-        style={styles.input}
-        onChange={(e) => {
-          const file = e.target.files?.[0];
-          if (file) {
-            if (!file.type.startsWith('image/')) { alert('Only image files allowed'); return; }
-            if (file.size > 5 * 1024 * 1024) { alert('Max file size 5MB'); return; }
-            setFileName(file.name);
-          }
-        }}
-      />
-      {fileName && <p>Selected file: {fileName}</p>}
+      {/* Features list */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 40px', marginTop: '1rem' }}>
+        <div>Club Logo</div>
+        <div>Club Colours</div>
+        <div>Player Number</div>
+        <div>Player Name</div>
+        <div>No Limit on Wording</div>
+        <div>Comes with Mini Keepsake Banner</div>
+      </div>
+    </div>
 
-      <textarea
-        name="comments"
-        placeholder="Comments"
-        style={{ ...styles.input, minHeight: '100px', resize: 'vertical' }}
-      />
+    {/* Photographic Banner Box */}
+    <div style={styles.infoBox}>
+      <h1 style={{ color: '#39FF14', marginBottom: '1rem' }}>Photographic Banner</h1>
 
-      <button type="submit" style={styles.submitButton}>Submit</button>
-    </form>
+      <div style={styles.photoPriceWrapper}>
+        {/* Photo inside the box */}
+        <div style={styles.photoContainer}>
+          <Image
+            src="/images/photoImg.jpg" // insert your photo here
+            alt="Photographic Banner"
+            fill
+            style={{ objectFit: 'contain' }}
+          />
+        </div>
+
+        {/* Prices outside */}
+        <div style={styles.priceColumn}>
+          <h3 style={styles.priceText}>2m - $150</h3>
+          <h3 style={styles.priceText}>4m - $240</h3>
+          <h3 style={styles.priceText}>Poles - $25</h3>
+        </div>
+      </div>
+
+      {/* Features list */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 40px', marginTop: '1rem' }}>
+        <div>One Photoshopped Photo</div>
+        <div>Club Logo</div>
+        <div>Club Colours</div>
+        <div>No Limit on Wording</div>
+        <div>Player Name</div>
+        <div>Player Number</div>
+        <div>Comes with Mini Keepsake Banner</div>
+        <div>Extra Photo $20 Each</div>
+      </div>
+    </div>
+
   </div>
 </section>
+
+        {/* Enquiry Form */}
+        <section style={styles.optionsFormSection}>
+          <div style={styles.formColumnCentered}>
+            <h2 style={styles.sectionHeading}>Enquiry Form</h2>
+
+            <form
+              style={styles.form}
+              onSubmit={async (e) => {
+                e.preventDefault();
+
+                if (bannerType.length === 0) {
+                  setBannerTypeError(true);
+                  return;
+                } else {
+                  setBannerTypeError(false);
+                }
+
+                const formData = new FormData(e.currentTarget);
+                bannerType.forEach((type) => formData.append('bannerType', type));
+
+                const res = await fetch('/api/enquiry', { method: 'POST', body: formData });
+                const data = await res.json();
+
+                if (data.success) {
+                  alert('Enquiry sent successfully!');
+                  e.currentTarget.reset();
+                  setFileName('');
+                  setBannerType([]);
+                } else {
+                  alert(data.error || 'Something went wrong');
+                }
+              }}
+            >
+              <input type="text" name="name" placeholder="Name" style={styles.input} required />
+              <input type="tel" name="phone" placeholder="Phone" style={styles.input} />
+              <input type="email" name="email" placeholder="Email" style={styles.input} required />
+              <input type="date" name="date" style={styles.input} />
+              <input type="number" name="quantity" placeholder="Quantity" min={1} style={styles.input} />
+
+              {/* Normal / Custom Checkboxes */}
+              <div style={styles.checkboxGroup}>
+                {['Normal', 'Custom'].map((type) => (
+                  <label key={type} style={styles.checkboxLabel}>
+                    <input
+                      type="checkbox"
+                      value={type}
+                      checked={bannerType.includes(type)}
+                      onChange={handleBannerTypeChange}
+                    />
+                    {type}
+                  </label>
+                ))}
+              </div>
+              {bannerTypeError && <p style={{ color: 'red' }}>Please select at least one option.</p>}
+
+              {/* File input */}
+              <input
+                type="file"
+                name="file"
+                accept="image/*"
+                style={styles.input}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    if (!file.type.startsWith('image/')) { alert('Only image files allowed'); return; }
+                    if (file.size > 5 * 1024 * 1024) { alert('Max file size 5MB'); return; }
+                    setFileName(file.name);
+                  }
+                }}
+              />
+              {fileName && <p>Selected file: {fileName}</p>}
+
+              <textarea
+                name="comments"
+                placeholder="Comments"
+                style={{ ...styles.input, minHeight: '100px', resize: 'vertical' }}
+              />
+
+              <button type="submit" style={styles.submitButton}>Submit</button>
+            </form>
+          </div>
+        </section>
 
         {/* Installation Video Section */}
         <section style={styles.videoSection}>
           <h2 style={styles.videoHeading}>How to install your Banner</h2>
 
           <div style={styles.videoWrapper}>
-            <video
-              controls
-              style={styles.video}
-            >
+            <video controls style={styles.video}>
               <source src="/videos/banner-install.mp4" type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
         </section>
-{activeImage !== null && (
-  <div style={styles.lightboxOverlay} onClick={() => setActiveImage(null)}>
-    <button
-      style={styles.closeButton}
-      onClick={() => setActiveImage(null)}
-    >
-      ✕
-    </button>
 
-    <motion.div
-      style={styles.lightboxImageWrapper}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.8, opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      onClick={(e) => e.stopPropagation()}
-    >
-      <Image
-        src={`/images/productImg${activeImage + 1}.jpeg`}
-        alt="Full view"
-        fill
-        style={{ objectFit: 'contain' }}
-      />
-    </motion.div>
-  </div>
-)}
+        {activeImage !== null && (
+          <div style={styles.lightboxOverlay} onClick={() => setActiveImage(null)}>
+            <button style={styles.closeButton} onClick={() => setActiveImage(null)}>✕</button>
+            <motion.div
+              style={styles.lightboxImageWrapper}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={`/images/productImg${activeImage + 1}.jpeg`}
+                alt="Full view"
+                fill
+                style={{ objectFit: 'contain' }}
+              />
+            </motion.div>
+          </div>
+        )}
       </div>
     </ClientLayout>
   );
 }
 
+// Responsive breakpoint
 const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
 
-const styles: { [key: string]: React.CSSProperties } = {
+const styles: { [key: string]: CSSProperties } = {
   pageWrapper: {
     paddingLeft: 'clamp(1rem, 5vw, 8rem)',
     paddingRight: 'clamp(1rem, 5vw, 8rem)',
@@ -241,6 +301,50 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundColor: '#111',
     padding: isMobile ? '1rem' : '1.5rem',
     borderRadius: '10px',
+    textAlign: 'center',
+  },
+
+  photoPriceRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '1rem',
+    flexWrap: 'wrap',
+  },
+
+  mainPhotoSpot: {
+    flex: '1 1 60%',
+    height: '200px',
+    backgroundColor: '#333',
+    borderRadius: '8px',
+  },
+  photoPriceWrapper: {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: '1rem',
+  flexWrap: 'wrap',
+},
+photoContainer: {
+  position: 'relative',
+  flex: '1 1 60%',
+  width: '100%',
+  aspectRatio: '16 / 9', // keeps the photo proportional
+  borderRadius: '8px',
+  overflow: 'hidden',
+},
+  priceColumn: {
+  flex: '0 0 30%',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-start',
+  gap: '0.5rem',
+},
+
+  priceText: {
+    fontSize: '2rem',
+    color: '#ffffff',
+    fontWeight: 500,
   },
 
   optionsFormSection: {

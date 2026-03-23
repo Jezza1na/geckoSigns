@@ -40,7 +40,7 @@ export default function CookieConsent() {
         left: 0,
         width: '100%',
         zIndex: 9999,
-        background: 'var(--bodyBackground)',
+        background: '#39FF14',
         color: 'var(--textColour)',
         borderTop: '1px solid var(--bodyBackgroundBorder)',
       }}
