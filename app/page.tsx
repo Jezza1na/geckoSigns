@@ -10,7 +10,7 @@ export default function Home() {
   const [fileName, setFileName] = useState('');
   const [bannerType, setBannerType] = useState<string[]>([]);
   const [bannerTypeError, setBannerTypeError] = useState(false);
-  const [activeImage, setActiveImage] = useState<number | null>(null);
+  const [activeImage, setActiveImage] = useState<number | 'club' | 'photo' | null>(null);
 
   const handleBannerTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -73,15 +73,17 @@ export default function Home() {
       <h1 style={{ color: '#39FF14', marginBottom: '1rem' }}>Club Banner</h1>
 
       <div style={styles.photoPriceWrapper}>
-        {/* Photo inside the box */}
-        <div style={styles.photoContainer}>
-          <Image
-            src="/images/textOnly.jpg" // insert your photo here
-            alt="Club Banner"
-            fill
-            style={{ objectFit: 'contain' }}
-          />
-        </div>
+        <div
+  style={styles.photoContainer}
+  onClick={() => setActiveImage('club')}
+>
+  <Image
+    src="/images/textOnly.jpg"
+    alt="Club Banner"
+    fill
+    style={{ objectFit: 'contain', cursor: 'pointer' }}
+  />
+</div>
 
         {/* Prices outside, aligned toward the box edge */}
         <div style={styles.priceColumn}>
@@ -107,15 +109,18 @@ export default function Home() {
       <h1 style={{ color: '#39FF14', marginBottom: '1rem' }}>Photographic Banner</h1>
 
       <div style={styles.photoPriceWrapper}>
-        {/* Photo inside the box */}
-        <div style={styles.photoContainer}>
-          <Image
-            src="/images/photoImg.jpg" // insert your photo here
-            alt="Photographic Banner"
-            fill
-            style={{ objectFit: 'contain' }}
-          />
-        </div>
+        {/* Photographic Banner Photo */}
+<div
+  style={styles.photoContainer}
+  onClick={() => setActiveImage('photo')}
+>
+  <Image
+    src="/images/photoImg.jpg"
+    alt="Photographic Banner"
+    fill
+    style={{ objectFit: 'contain', cursor: 'pointer' }}
+  />
+</div>
 
         {/* Prices outside */}
         <div style={styles.priceColumn}>
@@ -180,20 +185,29 @@ export default function Home() {
               <input type="date" name="date" style={styles.input} />
               <input type="number" name="quantity" placeholder="Quantity" min={1} style={styles.input} />
 
-              {/* Normal / Custom Checkboxes */}
-              <div style={styles.checkboxGroup}>
-                {['Normal', 'Custom'].map((type) => (
-                  <label key={type} style={styles.checkboxLabel}>
-                    <input
-                      type="checkbox"
-                      value={type}
-                      checked={bannerType.includes(type)}
-                      onChange={handleBannerTypeChange}
-                    />
-                    {type}
-                  </label>
-                ))}
-              </div>
+              {/* Normal / Custom Checkboxes → Club / Photographic */}
+<div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
+  {['Club Banner', 'Photographic Banner'].map((type) => (
+    <label key={type} style={styles.checkboxLabel}>
+      <input
+        type="checkbox"
+        value={type}
+        checked={bannerType.includes(type)}
+        onChange={handleBannerTypeChange}
+      />
+      {type}
+    </label>
+  ))}
+
+  {/* Type Input box (2-5 words) */}
+  <input
+    type="text"
+    name="bannerTypeText"
+    placeholder="Club"
+    maxLength={50} // approx 2-5 words
+    style={{ ...styles.input, flex: 1 }}
+  />
+</div>
               {bannerTypeError && <p style={{ color: 'red' }}>Please select at least one option.</p>}
 
               {/* File input */}
@@ -237,25 +251,31 @@ export default function Home() {
         </section>
 
         {activeImage !== null && (
-          <div style={styles.lightboxOverlay} onClick={() => setActiveImage(null)}>
-            <button style={styles.closeButton} onClick={() => setActiveImage(null)}>✕</button>
-            <motion.div
-              style={styles.lightboxImageWrapper}
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Image
-                src={`/images/productImg${activeImage + 1}.jpeg`}
-                alt="Full view"
-                fill
-                style={{ objectFit: 'contain' }}
-              />
-            </motion.div>
-          </div>
-        )}
+  <div style={styles.lightboxOverlay} onClick={() => setActiveImage(null)}>
+    <button style={styles.closeButton} onClick={() => setActiveImage(null)}>✕</button>
+    <motion.div
+      style={styles.lightboxImageWrapper}
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.8, opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <Image
+        src={
+          typeof activeImage === 'number'
+            ? `/images/productImg${activeImage + 1}.jpeg`
+            : activeImage === 'club'
+            ? '/images/textOnly.jpg'
+            : '/images/photoImg.jpg'
+        }
+        alt="Full view"
+        fill
+        style={{ objectFit: 'contain' }}
+      />
+    </motion.div>
+  </div>
+)}
       </div>
     </ClientLayout>
   );
@@ -329,7 +349,7 @@ photoContainer: {
   position: 'relative',
   flex: '1 1 60%',
   width: '100%',
-  aspectRatio: '16 / 9', // keeps the photo proportional
+  aspectRatio: '16 / 9',
   borderRadius: '8px',
   overflow: 'hidden',
 },
