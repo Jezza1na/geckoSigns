@@ -70,7 +70,7 @@ export default function Home() {
 
     {/* Club Banner Box */}
     <div style={styles.infoBox}>
-      <h1 style={{ color: '#39FF14', marginBottom: '1rem' }}>Club Banner</h1>
+      <h1 style={{ color: '#39FF14', marginBottom: '1rem', fontSize: 'clamp(1.5rem, 2.5vw, 2.2rem)' }}>Club Banner</h1>
 
       <div style={styles.photoPriceWrapper}>
         <div
@@ -106,7 +106,7 @@ export default function Home() {
 
     {/* Photographic Banner Box */}
     <div style={styles.infoBox}>
-      <h1 style={{ color: '#39FF14', marginBottom: '1rem' }}>Photographic Banner</h1>
+      <h1 style={{ color: '#39FF14', marginBottom: '1rem', fontSize: 'clamp(1.5rem, 2.5vw, 2.2rem)' }}>Photographic Banner</h1>
 
       <div style={styles.photoPriceWrapper}>
         {/* Photographic Banner Photo */}
@@ -186,7 +186,7 @@ export default function Home() {
               <input type="number" name="quantity" placeholder="Quantity" min={1} style={styles.input} />
 
               {/* Normal / Custom Checkboxes → Club / Photographic */}
-<div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '1rem' }}>
+<div style={styles.checkboxWrapper}>
   {['Club Banner', 'Photographic Banner'].map((type) => (
     <label key={type} style={styles.checkboxLabel}>
       <input
@@ -195,7 +195,7 @@ export default function Home() {
         checked={bannerType.includes(type)}
         onChange={handleBannerTypeChange}
       />
-      {type}
+      <span>{type}</span>
     </label>
   ))}
 
@@ -341,31 +341,31 @@ const styles: { [key: string]: CSSProperties } = {
   photoPriceWrapper: {
   display: 'flex',
   alignItems: 'center',
-  justifyContent: 'space-between',
   gap: '1rem',
   flexWrap: 'wrap',
 },
 photoContainer: {
   position: 'relative',
-  flex: '1 1 60%',
+  flex: '2 1 250px',
   width: '100%',
   aspectRatio: '16 / 9',
   borderRadius: '8px',
   overflow: 'hidden',
 },
   priceColumn: {
-  flex: '0 0 30%',
+  flex: '1 1 120px',
+  minWidth: '120px',
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'flex-start',
   gap: '0.5rem',
 },
 
   priceText: {
-    fontSize: '2rem',
-    color: '#ffffff',
-    fontWeight: 500,
-  },
+  fontSize: 'clamp(1.2rem, 2vw, 2rem)',
+  color: '#ffffff',
+  fontWeight: 500,
+  whiteSpace: 'nowrap',
+},
 
   optionsFormSection: {
     display: 'flex',
@@ -509,4 +509,23 @@ photoContainer: {
     cursor: 'pointer',
     zIndex: 10000,
   },
+
+  checkboxWrapper: {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+  gap: '0.75rem',
+  marginTop: '1rem',
+},
+
+checkboxLabel: {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.5rem',
+  padding: '0.5rem 0.75rem',
+  backgroundColor: '#111',
+  border: '1px solid #333',
+  borderRadius: '6px',
+  cursor: 'pointer',
+  fontSize: 'clamp(0.85rem, 1.2vw, 1rem)',
+},
 };
