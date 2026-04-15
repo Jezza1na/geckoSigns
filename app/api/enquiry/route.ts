@@ -66,7 +66,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Swear words are not allowed." }, { status: 400 });
     }
 
-    const submittedDate = new Date(date);
+    if (!date) {
+  return NextResponse.json({ error: "Date is required." }, { status: 400 });
+}
+
+const submittedDate = new Date(date);
+
+if (isNaN(submittedDate.getTime())) {
+  return NextResponse.json({ error: "Invalid date." }, { status: 400 });
+}
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
@@ -79,11 +87,27 @@ export async function POST(req: Request) {
 
     // --- File attachment ---
     let attachments: { filename: string; content: Buffer }[] = [];
-    if (file) {
-      if (!file.type.startsWith("image/")) return NextResponse.json({ error: "Only image files allowed." }, { status: 400 });
-      if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: "File too large (max 5MB)." }, { status: 400 });
-      attachments.push({ filename: file.name, content: Buffer.from(await file.arrayBuffer()) });
-    }
+
+if (file && file.size > 0) {
+  if (!file.type.startsWith("image/")) {
+    return NextResponse.json(
+      { error: "Only image files allowed." },
+      { status: 400 }
+    );
+  }
+
+  if (file.size > 5 * 1024 * 1024) {
+    return NextResponse.json(
+      { error: "File too large (max 5MB)." },
+      { status: 400 }
+    );
+  }
+
+  attachments.push({
+    filename: file.name,
+    content: Buffer.from(await file.arrayBuffer()),
+  });
+}
 
     // --- Send email to all recipients concurrently ---
     await Promise.all(
@@ -102,7 +126,7 @@ export async function POST(req: Request) {
             <p><strong>Banner Type:</strong> ${bannerTypes.join(", ")}</p>
             <p><strong>Comments:</strong> ${safeComments}</p>
           `,
-          attachments,
+          attachments: attachments.length > 0 ? attachments : undefined,
         })
       )
     );
