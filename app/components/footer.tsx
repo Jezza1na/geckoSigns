@@ -1,11 +1,10 @@
 // components/Footer.tsx
 import React from "react";
+import Image from "next/image";
 import { FaFacebookF, FaInstagram } from "react-icons/fa";
 import { MdEmail, MdPhone } from "react-icons/md";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
-
   return (
     <footer className="mt-auto" style={{ borderTop: '1px solid var(--bodyBackgroundBorder)', backgroundColor: '#0B0B0B', color: '#fff' }}>
       <div className="container py-4 d-flex flex-column flex-md-row justify-content-between gap-4">
@@ -18,7 +17,13 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 >
-                <img src="/images/GeckoSigns.jpg" alt="Logo" style={{ height: '60px' }} />
+                <Image
+                  src="/images/GeckoSigns.jpg"
+                  alt="Logo"
+                  width={180}
+                  height={60}
+                  style={{ height: '60px', width: 'auto' }}
+                />
               </a>
           </div>
           <div className="d-flex gap-2">

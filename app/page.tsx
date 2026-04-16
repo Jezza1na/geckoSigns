@@ -6,11 +6,15 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import type { CSSProperties } from 'react';
 
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+const BANNER_TYPE_OPTIONS = ['Club Banner', 'Photographic Banner'] as const;
+
 export default function Home() {
   const [fileName, setFileName] = useState('');
   const [bannerType, setBannerType] = useState<string[]>([]);
   const [bannerTypeError, setBannerTypeError] = useState(false);
   const [activeImage, setActiveImage] = useState<number | 'club' | 'photo' | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleBannerTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -18,6 +22,66 @@ export default function Home() {
       setBannerType((prev) => [...prev, value]);
     } else {
       setBannerType((prev) => prev.filter((v) => v !== value));
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+
+    if (!selectedFile) {
+      setFileName('');
+      return;
+    }
+
+    if (!selectedFile.type.startsWith('image/')) {
+      alert('Only image files allowed');
+      e.target.value = '';
+      setFileName('');
+      return;
+    }
+
+    if (selectedFile.size > MAX_FILE_SIZE_BYTES) {
+      alert('Max file size 5MB');
+      e.target.value = '';
+      setFileName('');
+      return;
+    }
+
+    setFileName(selectedFile.name);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (bannerType.length === 0) {
+      setBannerTypeError(true);
+      return;
+    }
+
+    setBannerTypeError(false);
+    setIsSubmitting(true);
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    bannerType.forEach((type) => formData.append('bannerType', type));
+
+    try {
+      const res = await fetch('/api/enquiry', { method: 'POST', body: formData });
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        alert(data.error || 'Something went wrong');
+        return;
+      }
+
+      alert('Enquiry sent successfully!');
+      form.reset();
+      setFileName('');
+      setBannerType([]);
+    } catch {
+      alert('Unable to send your enquiry right now. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -153,41 +217,17 @@ export default function Home() {
 
             <form
               style={styles.form}
-              onSubmit={async (e) => {
-                e.preventDefault();
-
-                if (bannerType.length === 0) {
-                  setBannerTypeError(true);
-                  return;
-                } else {
-                  setBannerTypeError(false);
-                }
-
-                const formData = new FormData(e.currentTarget);
-                bannerType.forEach((type) => formData.append('bannerType', type));
-
-                const res = await fetch('/api/enquiry', { method: 'POST', body: formData });
-                const data = await res.json();
-
-                if (data.success) {
-                  alert('Enquiry sent successfully!');
-                  e.currentTarget.reset();
-                  setFileName('');
-                  setBannerType([]);
-                } else {
-                  alert(data.error || 'Something went wrong');
-                }
-              }}
+              onSubmit={handleSubmit}
             >
               <input type="text" name="name" placeholder="Name" style={styles.input} required />
               <input type="tel" name="phone" placeholder="Phone" style={styles.input} />
               <input type="email" name="email" placeholder="Email" style={styles.input} required />
-              <input type="date" name="date" style={styles.input} />
+              <input type="date" name="date" style={styles.input} required />
               <input type="number" name="quantity" placeholder="Quantity" min={1} style={styles.input} />
 
               {/* Normal / Custom Checkboxes → Club / Photographic */}
 <div style={styles.checkboxWrapper}>
-  {['Club Banner', 'Photographic Banner'].map((type) => (
+  {BANNER_TYPE_OPTIONS.map((type) => (
     <label key={type} style={styles.checkboxLabel}>
       <input
         type="checkbox"
@@ -216,15 +256,9 @@ export default function Home() {
                 name="file"
                 accept="image/*"
                 style={styles.input}
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    if (!file.type.startsWith('image/')) { alert('Only image files allowed'); return; }
-                    if (file.size > 5 * 1024 * 1024) { alert('Max file size 5MB'); return; }
-                    setFileName(file.name);
-                  }
-                }}
+                onChange={handleFileChange}
               />
+              <p style={styles.helperText}>Photo upload is optional.</p>
               {fileName && <p>Selected file: {fileName}</p>}
 
               <textarea
@@ -233,7 +267,9 @@ export default function Home() {
                 style={{ ...styles.input, minHeight: '100px', resize: 'vertical' }}
               />
 
-              <button type="submit" style={styles.submitButton}>Submit</button>
+              <button type="submit" style={styles.submitButton} disabled={isSubmitting}>
+                {isSubmitting ? 'Sending...' : 'Submit'}
+              </button>
             </form>
           </div>
         </section>
@@ -418,6 +454,12 @@ photoContainer: {
     fontSize: '16px',
     cursor: 'pointer',
     fontWeight: 'bold',
+  },
+
+  helperText: {
+    margin: '-0.5rem 0 0',
+    fontSize: '0.9rem',
+    color: '#b3b3b3',
   },
 
   imageWrapper: {

@@ -2,7 +2,9 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY!);
+const DEFAULT_ENQUIRY_RECIPIENT = "sam@geckosigns.net.au";
+const DEFAULT_FROM_EMAIL = "enquiries@geckosigns.net.au";
+const DEFAULT_FROM_NAME = "Milestone Banners";
 
 // --- In-memory rate limiter (per IP) ---
 const rateLimitMap: Record<string, number[]> = {};
@@ -25,10 +27,55 @@ const capitalizeWords = (str: string) =>
 
 // --- Recipients ---
 const recipients =
-  process.env.ENQUIRY_RECIPIENTS?.split(",").map((e) => e.trim()) || [];
+  process.env.ENQUIRY_RECIPIENTS?.split(",").map((e) => e.trim()).filter(Boolean) || [
+    DEFAULT_ENQUIRY_RECIPIENT,
+  ];
+
+const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+
+type OptionalUpload = File | null;
+
+const getOptionalUpload = (value: FormDataEntryValue | null): OptionalUpload => {
+  if (!(value instanceof File)) {
+    return null;
+  }
+
+  if (!value.name || value.size === 0) {
+    return null;
+  }
+
+  return value;
+};
+
+const getResendClient = () => {
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    throw new Error("Missing RESEND_API_KEY");
+  }
+
+  return new Resend(apiKey);
+};
+
+const getFromAddress = () => {
+  const fromEmail = process.env.ENQUIRY_FROM_EMAIL?.trim() || DEFAULT_FROM_EMAIL;
+  const fromName = process.env.ENQUIRY_FROM_NAME?.trim() || DEFAULT_FROM_NAME;
+
+  return `${fromName} <${fromEmail}>`;
+};
 
 export async function POST(req: Request) {
   try {
+    if (recipients.length === 0) {
+      return NextResponse.json(
+        { error: "Email service is not configured." },
+        { status: 500 }
+      );
+    }
+
+    const resend = getResendClient();
+    const fromAddress = getFromAddress();
+
     // --- IP detection (safe) ---
     const ip = (req.headers.get("x-forwarded-for") || "unknown").split(",")[0];
 
@@ -59,8 +106,9 @@ export async function POST(req: Request) {
     const date = (formData.get("date") as string) || "";
     let quantity = parseInt((formData.get("quantity") as string) || "1");
     const comments = (formData.get("comments") as string) || "";
+    const bannerTypeText = (formData.get("bannerTypeText") as string) || "";
     const bannerTypes = formData.getAll("bannerType") as string[];
-    const file = formData.get("file") as File | null;
+    const file = getOptionalUpload(formData.get("file"));
 
     // --- Validation ---
     if (!name || !email) {
@@ -134,17 +182,14 @@ export async function POST(req: Request) {
 
     const safeName = escapeHtml(capitalizeWords(name.slice(0, 50)));
     const safeComments = escapeHtml(comments.slice(0, 500));
+    const safeBannerTypeText = escapeHtml(capitalizeWords(bannerTypeText.slice(0, 50)));
+    const safePhone = escapeHtml(phone.slice(0, 20));
+    const safeEmail = escapeHtml(email.slice(0, 100));
 
     // --- File attachment ---
-    let attachments: { filename: string; content: Buffer }[] = [];
+    const attachments: { filename: string; content: Buffer }[] = [];
 
-    const hasValidFile =
-      file &&
-      typeof file === "object" &&
-      file.size > 0 &&
-      file.name;
-
-    if (hasValidFile) {
+    if (file) {
       if (!file.type || !file.type.startsWith("image/")) {
         return NextResponse.json(
           { error: "Only image files allowed." },
@@ -152,7 +197,7 @@ export async function POST(req: Request) {
         );
       }
 
-      if (file.size > 5 * 1024 * 1024) {
+      if (file.size > MAX_FILE_SIZE_BYTES) {
         return NextResponse.json(
           { error: "File too large (max 5MB)." },
           { status: 400 }
@@ -169,21 +214,23 @@ export async function POST(req: Request) {
     await Promise.all(
       recipients.map((recipient) =>
         resend.emails.send({
-          from: "Enquiry <onboarding@resend.dev>",
+          from: fromAddress,
           to: recipient,
+          replyTo: email,
           subject: "New Milestone Banner Enquiry",
           html: `
             <h2>New Enquiry</h2>
             <p><strong>Name:</strong> ${safeName}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            <p><strong>Phone:</strong> ${phone}</p>
+            <p><strong>Email:</strong> ${safeEmail}</p>
+            <p><strong>Phone:</strong> ${safePhone || "Not provided"}</p>
             <p><strong>Date:</strong> ${submittedDate.toDateString()}</p>
             <p><strong>Quantity:</strong> ${quantity}</p>
             <p><strong>Banner Type:</strong> ${bannerTypes.join(", ")}</p>
+            <p><strong>Club:</strong> ${safeBannerTypeText || "Not provided"}</p>
             <p><strong>Comments:</strong> ${safeComments}</p>
+            <p><strong>Photo Attached:</strong> ${file ? "Yes" : "No"}</p>
           `,
-          attachments:
-            attachments.length > 0 ? attachments : undefined,
+          attachments: attachments.length > 0 ? attachments : undefined,
         })
       )
     );
