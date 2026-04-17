@@ -37,3 +37,112 @@ body {
   filter: brightness(0) saturate(100%) invert(80%) sepia(96%) saturate(2229%) hue-rotate(43deg) brightness(103%) contrast(101%);
   cursor: pointer;
 }
+
+/* --- Milestone banner pricing cards (responsive grid + preview size) --- */
+.bannerPricingSection {
+  background-color: #1a1a1a;
+  padding: 1rem;
+  border-radius: 12px;
+}
+
+@media (min-width: 768px) {
+  .bannerPricingSection {
+    padding: 2rem;
+  }
+}
+
+.bannerInfoGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+  justify-items: stretch;
+}
+
+/* Wide desktop: two cards on top, third centered below */
+@media (min-width: 1200px) {
+  .bannerInfoGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .bannerInfoBoxThird {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: 100%;
+    max-width: min(520px, calc(50% - 0.625rem));
+  }
+}
+
+.bannerInfoBox {
+  background-color: #111;
+  border-radius: 10px;
+  text-align: center;
+  padding: 1rem;
+  min-width: 0;
+}
+
+@media (min-width: 1200px) {
+  .bannerInfoBox {
+    padding: 1.5rem;
+  }
+}
+
+.bannerPhotoWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+@media (min-width: 1200px) {
+  .bannerPhotoWrap {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+}
+
+/* Preview image: not huge on desktop; comfortable on phone/tablet */
+.bannerPhotoSpot {
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  max-height: min(52vw, 260px);
+}
+
+@media (min-width: 1200px) {
+  .bannerPhotoSpot {
+    flex: 0 1 auto;
+    width: min(100%, 360px);
+    max-width: 360px;
+    max-height: 200px;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+.bannerFeatureList {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+@media (min-width: 1200px) {
+  .bannerFeatureList {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 24px;
+  }
+}
+
+.bannerFeatureItem {
+  font-size: clamp(0.9rem, 2.2vw, 1rem);
+  line-height: 1.35;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}

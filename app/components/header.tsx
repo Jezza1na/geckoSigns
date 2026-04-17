@@ -160,8 +160,8 @@ export default function Navbar() {
   return (
     <header ref={headerRef} style={styles.header}>
       <Image
-        src="/images/geckoSignsBanner.png"
-        alt="GeckoSigns"
+        src="/images/geckoSignsBanner.jpg"
+        alt="Milestone Banners by Gecko Signs"
         width={1920}
         height={381}
         priority

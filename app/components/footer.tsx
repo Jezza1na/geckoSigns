@@ -19,7 +19,7 @@ const Footer = () => {
                 >
                 <Image
                   src="/images/GeckoSigns.jpg"
-                  alt="Logo"
+                  alt="Gecko Signs logo"
                   width={180}
                   height={60}
                   style={{ height: '60px', width: 'auto' }}

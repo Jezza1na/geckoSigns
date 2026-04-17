@@ -204,6 +204,11 @@ export async function POST(req: Request) {
     const safeBannerTypeText = escapeHtml(capitalizeWords(bannerTypeText.slice(0, 50)));
     const safePhone = escapeHtml(phone.slice(0, 20));
     const safeEmail = escapeHtml(email.slice(0, 100));
+    const plainName = capitalizeWords(name.slice(0, 50));
+    const plainComments = comments.slice(0, 500);
+    const plainBannerTypeText = capitalizeWords(bannerTypeText.slice(0, 50));
+    const plainPhone = phone.slice(0, 20);
+    const plainEmail = email.slice(0, 100);
 
     // --- File attachment ---
     const attachments: { filename: string; content: Buffer }[] = [];
@@ -237,6 +242,20 @@ export async function POST(req: Request) {
           to: recipient,
           replyTo: email,
           subject: "New Milestone Banner Enquiry",
+          text: [
+            "New Enquiry",
+            `Name: ${plainName}`,
+            `Email: ${plainEmail}`,
+            `Phone: ${plainPhone || "Not provided"}`,
+            `Date: ${submittedDate.toDateString()}`,
+            `Quantity: ${quantity}`,
+            `Banner Size: ${bannerSize}`,
+            `Poles: ${polesSelected ? "Yes" : "No"}`,
+            `Banner Type: ${bannerTypes.join(", ")}`,
+            `Club: ${plainBannerTypeText || "Not provided"}`,
+            `Comments: ${plainComments || "None"}`,
+            `Photo Attached: ${file ? "Yes" : "No"}`,
+          ].join("\n"),
           html: `
             <h2>New Enquiry</h2>
             <p><strong>Name:</strong> ${safeName}</p>

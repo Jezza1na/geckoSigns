@@ -9,6 +9,32 @@ import type { CSSProperties } from 'react';
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
 const BANNER_TYPE_OPTIONS = ['Club', 'Photographic', 'Cartoon'] as const;
 
+/** Gallery + preview filenames under `public/images` (keep in sync with files on disk). */
+const GALLERY_COUNT = 8;
+const galleryImageSrc = (indexZeroBased: number) => `/images/banner${indexZeroBased + 1}.jpeg`;
+
+const PREVIEW_IMAGE = {
+  club: '/images/clubBanner.jpg',
+  photo: '/images/photoBanner.jpg',
+  cartoon: '/images/cartoonBanner.jpg',
+} as const;
+
+const lightboxImageSrc = (active: number | 'club' | 'photo' | 'cartoon') => {
+  if (typeof active === 'number') {
+    return galleryImageSrc(active);
+  }
+  return PREVIEW_IMAGE[active];
+};
+
+const lightboxImageAlt = (active: number | 'club' | 'photo' | 'cartoon') => {
+  if (typeof active === 'number') {
+    return `Milestone banner example ${active + 1}`;
+  }
+  if (active === 'club') return 'Club banner example';
+  if (active === 'photo') return 'Photographic banner example';
+  return 'Cartoon banner example';
+};
+
 export default function Home() {
   const [fileName, setFileName] = useState('');
   const [bannerType, setBannerType] = useState<string[]>([]);
@@ -130,7 +156,7 @@ export default function Home() {
 
         {/* Product Photos */}
         <section id="first-row" style={styles.gridSection}>
-          {[...Array(8)].map((_, idx) => {
+          {[...Array(GALLERY_COUNT)].map((_, idx) => {
             const isLeft = idx % 2 === 0;
             return (
               <motion.button
@@ -142,11 +168,11 @@ export default function Home() {
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
                 onClick={() => setActiveImage(idx)}
-                aria-label={`Open product photo ${idx + 1}`}
+                aria-label={`Open banner example ${idx + 1}`}
               >
                 <Image
-                  src={`/images/productImg${idx + 1}.jpeg`}
-                  alt={`Photo ${idx + 1}`}
+                  src={galleryImageSrc(idx)}
+                  alt={`Milestone banner example ${idx + 1}`}
                   fill
                   sizes="(max-width: 768px) 100vw, 50vw"
                   style={{ objectFit: 'cover', cursor: 'pointer' }}
@@ -157,25 +183,26 @@ export default function Home() {
         </section>
 
         {/* Info Section */}
-<section style={styles.infoSection}>
-  <div style={styles.infoGrid}>
+<section className="bannerPricingSection">
+  <div className="bannerInfoGrid">
 
     {/* Club Banner Box */}
-    <div style={styles.infoBox}>
+    <div className="bannerInfoBox">
       <h1 style={styles.bannerCardHeading}>Club Banner</h1>
 
-      <div style={styles.photoPriceWrapper}>
+      <div className="bannerPhotoWrap">
         <button
   type="button"
   aria-label="Open club banner preview"
-  style={{ ...styles.photoContainer, ...styles.previewButton }}
+  className="bannerPhotoSpot"
+  style={styles.previewButton}
   onClick={() => setActiveImage('club')}
 >
   <Image
-    src="/images/textOnly.jpg"
-    alt="Club Banner"
+    src={PREVIEW_IMAGE.club}
+    alt="Club banner example"
     fill
-    sizes="(max-width: 1024px) 100vw, 70vw"
+    sizes="(max-width: 1199px) 100vw, 360px"
     style={{ objectFit: 'contain', cursor: 'pointer' }}
   />
 </button>
@@ -189,33 +216,34 @@ export default function Home() {
       </div>
 
       {/* Features list */}
-      <div style={styles.featureList}>
-        <div style={styles.featureItem}>Club Logo</div>
-        <div style={styles.featureItem}>Club Colours</div>
-        <div style={styles.featureItem}>Player Number</div>
-        <div style={styles.featureItem}>Player Name</div>
-        <div style={styles.featureItem}>No Limit on Wording</div>
-        <div style={styles.featureItem}>Comes with Mini Keepsake Banner</div>
+      <div className="bannerFeatureList">
+        <div className="bannerFeatureItem">Club Logo</div>
+        <div className="bannerFeatureItem">Club Colours</div>
+        <div className="bannerFeatureItem">Player Number</div>
+        <div className="bannerFeatureItem">Player Name</div>
+        <div className="bannerFeatureItem">No Limit on Wording</div>
+        <div className="bannerFeatureItem">Comes with Mini Keepsake Banner</div>
       </div>
     </div>
 
     {/* Photographic Banner Box */}
-    <div style={styles.infoBox}>
+    <div className="bannerInfoBox">
       <h1 style={styles.bannerCardHeading}>Photographic Banner</h1>
 
-      <div style={styles.photoPriceWrapper}>
+      <div className="bannerPhotoWrap">
         {/* Photographic Banner Photo */}
 <button
   type="button"
   aria-label="Open photographic banner preview"
-  style={{ ...styles.photoContainer, ...styles.previewButton }}
+  className="bannerPhotoSpot"
+  style={styles.previewButton}
   onClick={() => setActiveImage('photo')}
 >
   <Image
-    src="/images/photoImg.jpg"
-    alt="Photographic Banner"
+    src={PREVIEW_IMAGE.photo}
+    alt="Photographic banner example"
     fill
-    sizes="(max-width: 1024px) 100vw, 70vw"
+    sizes="(max-width: 1199px) 100vw, 360px"
     style={{ objectFit: 'contain', cursor: 'pointer' }}
   />
 </button>
@@ -229,34 +257,35 @@ export default function Home() {
       </div>
 
       {/* Features list */}
-      <div style={styles.featureList}>
-        <div style={styles.featureItem}>One Photoshopped Photo</div>
-        <div style={styles.featureItem}>Club Logo</div>
-        <div style={styles.featureItem}>Club Colours</div>
-        <div style={styles.featureItem}>No Limit on Wording</div>
-        <div style={styles.featureItem}>Player Name</div>
-        <div style={styles.featureItem}>Player Number</div>
-        <div style={styles.featureItem}>Comes with Mini Keepsake Banner</div>
-        <div style={styles.featureItem}>Extra Photo $20 Each</div>
+      <div className="bannerFeatureList">
+        <div className="bannerFeatureItem">One Photoshopped Photo</div>
+        <div className="bannerFeatureItem">Club Logo</div>
+        <div className="bannerFeatureItem">Club Colours</div>
+        <div className="bannerFeatureItem">No Limit on Wording</div>
+        <div className="bannerFeatureItem">Player Name</div>
+        <div className="bannerFeatureItem">Player Number</div>
+        <div className="bannerFeatureItem">Comes with Mini Keepsake Banner</div>
+        <div className="bannerFeatureItem">Extra Photo $20 Each</div>
       </div>
     </div>
 
     {/* Cartoon Banner Box */}
-    <div style={styles.infoBox}>
+    <div className="bannerInfoBox bannerInfoBoxThird">
       <h1 style={styles.bannerCardHeading}>Cartoon Banner</h1>
 
-      <div style={styles.photoPriceWrapper}>
+      <div className="bannerPhotoWrap">
         <button
           type="button"
           aria-label="Open cartoon banner preview"
-          style={{ ...styles.photoContainer, ...styles.previewButton }}
+          className="bannerPhotoSpot"
+          style={styles.previewButton}
           onClick={() => setActiveImage('cartoon')}
         >
           <Image
-            src="/images/photoImg.jpg"
-            alt="Cartoon Banner"
+            src={PREVIEW_IMAGE.cartoon}
+            alt="Cartoon banner example"
             fill
-            sizes="(max-width: 1024px) 100vw, 70vw"
+            sizes="(max-width: 1199px) 100vw, 360px"
             style={{ objectFit: 'contain', cursor: 'pointer' }}
           />
         </button>
@@ -268,15 +297,15 @@ export default function Home() {
         </div>
       </div>
 
-      <div style={styles.featureList}>
-        <div style={styles.featureItem}>Cartoon Style Artwork</div>
-        <div style={styles.featureItem}>Club Logo</div>
-        <div style={styles.featureItem}>Club Colours</div>
-        <div style={styles.featureItem}>No Limit on Wording</div>
-        <div style={styles.featureItem}>Player Name</div>
-        <div style={styles.featureItem}>Player Number</div>
-        <div style={styles.featureItem}>Comes with Mini Keepsake Banner</div>
-        <div style={styles.featureItem}>Extra Character $20 Each</div>
+      <div className="bannerFeatureList">
+        <div className="bannerFeatureItem">Cartoon Style Artwork</div>
+        <div className="bannerFeatureItem">Club Logo</div>
+        <div className="bannerFeatureItem">Club Colours</div>
+        <div className="bannerFeatureItem">No Limit on Wording</div>
+        <div className="bannerFeatureItem">Player Name</div>
+        <div className="bannerFeatureItem">Player Number</div>
+        <div className="bannerFeatureItem">Comes with Mini Keepsake Banner</div>
+        <div className="bannerFeatureItem">Extra Character $20 Each</div>
       </div>
     </div>
 
@@ -295,7 +324,7 @@ export default function Home() {
               <input type="text" name="name" placeholder="Name" aria-label="Name" autoComplete="name" style={styles.input} required />
               <input type="tel" name="phone" placeholder="Phone" aria-label="Phone" autoComplete="tel" style={styles.input} />
               <input type="email" name="email" placeholder="Email" aria-label="Email" autoComplete="email" style={styles.input} required />
-              <input type="date" name="date" aria-label="Required by date" className="enquiryDateInput" style={styles.input} required />
+              <input type="date" name="date" aria-label="Date required" className="enquiryDateInput" style={styles.input} required />
               <input type="number" name="quantity" placeholder="Quantity" aria-label="Quantity" min={1} style={styles.input} />
               <div style={styles.formOptionGroup}>
                 <p style={styles.optionGroupLabel}>Banner Size</p>
@@ -405,16 +434,8 @@ export default function Home() {
       onClick={(e) => e.stopPropagation()}
     >
       <Image
-        src={
-          typeof activeImage === 'number'
-            ? `/images/productImg${activeImage + 1}.jpeg`
-            : activeImage === 'club'
-            ? '/images/textOnly.jpg'
-            : activeImage === 'photo'
-            ? '/images/photoImg.jpg'
-            : '/images/photoImg.jpg'
-        }
-        alt="Full view"
+        src={lightboxImageSrc(activeImage)}
+        alt={lightboxImageAlt(activeImage)}
         fill
         sizes="100vw"
         style={{ objectFit: 'contain' }}
@@ -449,25 +470,6 @@ const styles: { [key: string]: CSSProperties } = {
     gap: '1rem',
   },
 
-  infoSection: {
-    backgroundColor: '#1A1A1A',
-    padding: '2rem',
-    borderRadius: '12px',
-  },
-
-  infoGrid: {
-    display: 'grid',
-    gap: '1rem',
-    gridTemplateColumns: '1fr',
-    justifyItems: 'stretch',
-  },
-
-  infoBox: {
-    backgroundColor: '#111',
-    padding: isTabletOrSmaller ? '1rem' : '1.5rem',
-    borderRadius: '10px',
-    textAlign: 'center',
-  },
   bannerCardHeading: {
     color: '#39FF14',
     marginBottom: '1rem',
@@ -477,35 +479,6 @@ const styles: { [key: string]: CSSProperties } = {
     overflowWrap: 'anywhere',
   },
 
-  photoPriceRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '1rem',
-    flexWrap: 'wrap',
-  },
-
-  mainPhotoSpot: {
-    flex: '1 1 60%',
-    height: '200px',
-    backgroundColor: '#333',
-    borderRadius: '8px',
-  },
-  photoPriceWrapper: {
-  display: 'flex',
-  alignItems: isTabletOrSmaller ? 'stretch' : 'center',
-  flexDirection: isTabletOrSmaller ? 'column' : 'row',
-  gap: '1rem',
-  flexWrap: 'wrap',
-},
-photoContainer: {
-  position: 'relative',
-  flex: isTabletOrSmaller ? '1 1 100%' : '2 1 250px',
-  width: '100%',
-  aspectRatio: isTabletOrSmaller ? '4 / 3' : '16 / 9',
-  borderRadius: '8px',
-  overflow: 'hidden',
-},
   priceColumn: {
   flex: isTabletOrSmaller ? '1 1 100%' : '1 1 120px',
   minWidth: isTabletOrSmaller ? '100%' : '120px',
@@ -524,20 +497,6 @@ photoContainer: {
   overflowWrap: 'anywhere',
   textAlign: 'center',
 },
-  featureList: {
-    display: 'grid',
-    gridTemplateColumns: isTabletOrSmaller ? '1fr' : '1fr 1fr',
-    gap: isTabletOrSmaller ? '0.45rem' : '8px 24px',
-    marginTop: '1rem',
-    textAlign: 'left',
-  },
-  featureItem: {
-    fontSize: 'clamp(0.9rem, 2.2vw, 1rem)',
-    lineHeight: 1.35,
-    wordBreak: 'break-word',
-    overflowWrap: 'anywhere',
-  },
-
   optionsFormSection: {
     display: 'flex',
     justifyContent: 'center',
