@@ -160,7 +160,7 @@ export default function Navbar() {
   return (
     <header ref={headerRef} style={styles.header}>
       <Image
-        src="/images/geckoSignsBanner.jpg"
+        src="/images/geckoSignsBanner.png"
         alt="Milestone Banners by Gecko Signs"
         width={1920}
         height={381}
@@ -171,7 +171,7 @@ export default function Navbar() {
       {(eyesClosed || eyesOpenStrike) && (
         <Image
           src={eyesOpenStrike ? '/images/geckoEyesOpen.png' : '/images/geckoEyesClosed.png'}
-          alt="Eyes Overlay"
+          alt="Gecko eyes animation"
           width={1920}
           height={381}
           style={styles.overlayImage}
@@ -209,11 +209,11 @@ const styles: { [key: string]: CSSProperties } = {
   },
   overlayImage: {
     position: 'absolute',
-    top: 0,
-    left: 0,
+    inset: 0,
     width: '100%',
     height: '100%',
-    objectFit: 'contain',
+    objectFit: 'cover',
+    objectPosition: 'center',
     pointerEvents: 'none',
   },
   tongueSvg: {
