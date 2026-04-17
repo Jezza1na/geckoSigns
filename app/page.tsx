@@ -2,19 +2,37 @@
 
 import ClientLayout from '@/app/ClientLayout';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
-const BANNER_TYPE_OPTIONS = ['Club Banner', 'Photographic Banner'] as const;
+const BANNER_TYPE_OPTIONS = ['Club', 'Photographic', 'Cartoon'] as const;
 
 export default function Home() {
   const [fileName, setFileName] = useState('');
   const [bannerType, setBannerType] = useState<string[]>([]);
   const [bannerTypeError, setBannerTypeError] = useState(false);
-  const [activeImage, setActiveImage] = useState<number | 'club' | 'photo' | null>(null);
+  const [activeImage, setActiveImage] = useState<number | 'club' | 'photo' | 'cartoon' | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const requiresPhoto = bannerType.includes('Photographic') || bannerType.includes('Cartoon');
+
+  useEffect(() => {
+    if (activeImage === null) {
+      return;
+    }
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setActiveImage(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [activeImage]);
 
   const handleBannerTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -52,16 +70,23 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
 
     if (bannerType.length === 0) {
       setBannerTypeError(true);
       return;
     }
 
+    const fileInput = form.elements.namedItem('file') as HTMLInputElement | null;
+    const selectedFile = fileInput?.files?.[0];
+    if (requiresPhoto && !selectedFile) {
+      alert('Please upload a photo for Photographic or Cartoon banners.');
+      return;
+    }
+
     setBannerTypeError(false);
     setIsSubmitting(true);
 
-    const form = e.currentTarget;
     const formData = new FormData(form);
     bannerType.forEach((type) => formData.append('bannerType', type));
 
@@ -87,7 +112,7 @@ export default function Home() {
 
   return (
     <ClientLayout>
-      <div style={styles.pageWrapper}>
+      <main style={styles.pageWrapper}>
 
         {/* Heading + Intro */}
         <section style={styles.introSection}>
@@ -108,22 +133,25 @@ export default function Home() {
           {[...Array(8)].map((_, idx) => {
             const isLeft = idx % 2 === 0;
             return (
-              <motion.div
+              <motion.button
+                type="button"
                 key={idx}
-                style={styles.imageWrapper}
-                initial={{ x: isLeft ? -100 : 100, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
+                style={{ ...styles.imageWrapper, ...styles.previewButton }}
+                initial={prefersReducedMotion ? false : { x: isLeft ? -100 : 100, opacity: 0 }}
+                whileInView={prefersReducedMotion ? {} : { x: 0, opacity: 1 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
                 onClick={() => setActiveImage(idx)}
+                aria-label={`Open product photo ${idx + 1}`}
               >
                 <Image
                   src={`/images/productImg${idx + 1}.jpeg`}
                   alt={`Photo ${idx + 1}`}
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   style={{ objectFit: 'cover', cursor: 'pointer' }}
                 />
-              </motion.div>
+              </motion.button>
             );
           })}
         </section>
@@ -134,20 +162,23 @@ export default function Home() {
 
     {/* Club Banner Box */}
     <div style={styles.infoBox}>
-      <h1 style={{ color: '#39FF14', marginBottom: '1rem', fontSize: 'clamp(1.5rem, 2.5vw, 2.2rem)' }}>Club Banner</h1>
+      <h1 style={styles.bannerCardHeading}>Club Banner</h1>
 
       <div style={styles.photoPriceWrapper}>
-        <div
-  style={styles.photoContainer}
+        <button
+  type="button"
+  aria-label="Open club banner preview"
+  style={{ ...styles.photoContainer, ...styles.previewButton }}
   onClick={() => setActiveImage('club')}
 >
   <Image
     src="/images/textOnly.jpg"
     alt="Club Banner"
     fill
+    sizes="(max-width: 1024px) 100vw, 70vw"
     style={{ objectFit: 'contain', cursor: 'pointer' }}
   />
-</div>
+</button>
 
         {/* Prices outside, aligned toward the box edge */}
         <div style={styles.priceColumn}>
@@ -158,33 +189,36 @@ export default function Home() {
       </div>
 
       {/* Features list */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 40px', marginTop: '1rem' }}>
-        <div>Club Logo</div>
-        <div>Club Colours</div>
-        <div>Player Number</div>
-        <div>Player Name</div>
-        <div>No Limit on Wording</div>
-        <div>Comes with Mini Keepsake Banner</div>
+      <div style={styles.featureList}>
+        <div style={styles.featureItem}>Club Logo</div>
+        <div style={styles.featureItem}>Club Colours</div>
+        <div style={styles.featureItem}>Player Number</div>
+        <div style={styles.featureItem}>Player Name</div>
+        <div style={styles.featureItem}>No Limit on Wording</div>
+        <div style={styles.featureItem}>Comes with Mini Keepsake Banner</div>
       </div>
     </div>
 
     {/* Photographic Banner Box */}
     <div style={styles.infoBox}>
-      <h1 style={{ color: '#39FF14', marginBottom: '1rem', fontSize: 'clamp(1.5rem, 2.5vw, 2.2rem)' }}>Photographic Banner</h1>
+      <h1 style={styles.bannerCardHeading}>Photographic Banner</h1>
 
       <div style={styles.photoPriceWrapper}>
         {/* Photographic Banner Photo */}
-<div
-  style={styles.photoContainer}
+<button
+  type="button"
+  aria-label="Open photographic banner preview"
+  style={{ ...styles.photoContainer, ...styles.previewButton }}
   onClick={() => setActiveImage('photo')}
 >
   <Image
     src="/images/photoImg.jpg"
     alt="Photographic Banner"
     fill
+    sizes="(max-width: 1024px) 100vw, 70vw"
     style={{ objectFit: 'contain', cursor: 'pointer' }}
   />
-</div>
+</button>
 
         {/* Prices outside */}
         <div style={styles.priceColumn}>
@@ -195,15 +229,54 @@ export default function Home() {
       </div>
 
       {/* Features list */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px 40px', marginTop: '1rem' }}>
-        <div>One Photoshopped Photo</div>
-        <div>Club Logo</div>
-        <div>Club Colours</div>
-        <div>No Limit on Wording</div>
-        <div>Player Name</div>
-        <div>Player Number</div>
-        <div>Comes with Mini Keepsake Banner</div>
-        <div>Extra Photo $20 Each</div>
+      <div style={styles.featureList}>
+        <div style={styles.featureItem}>One Photoshopped Photo</div>
+        <div style={styles.featureItem}>Club Logo</div>
+        <div style={styles.featureItem}>Club Colours</div>
+        <div style={styles.featureItem}>No Limit on Wording</div>
+        <div style={styles.featureItem}>Player Name</div>
+        <div style={styles.featureItem}>Player Number</div>
+        <div style={styles.featureItem}>Comes with Mini Keepsake Banner</div>
+        <div style={styles.featureItem}>Extra Photo $20 Each</div>
+      </div>
+    </div>
+
+    {/* Cartoon Banner Box */}
+    <div style={styles.infoBox}>
+      <h1 style={styles.bannerCardHeading}>Cartoon Banner</h1>
+
+      <div style={styles.photoPriceWrapper}>
+        <button
+          type="button"
+          aria-label="Open cartoon banner preview"
+          style={{ ...styles.photoContainer, ...styles.previewButton }}
+          onClick={() => setActiveImage('cartoon')}
+        >
+          <Image
+            src="/images/photoImg.jpg"
+            alt="Cartoon Banner"
+            fill
+            sizes="(max-width: 1024px) 100vw, 70vw"
+            style={{ objectFit: 'contain', cursor: 'pointer' }}
+          />
+        </button>
+
+        <div style={styles.priceColumn}>
+          <h3 style={styles.priceText}>2m - $150</h3>
+          <h3 style={styles.priceText}>4m - $240</h3>
+          <h3 style={styles.priceText}>Poles - $25</h3>
+        </div>
+      </div>
+
+      <div style={styles.featureList}>
+        <div style={styles.featureItem}>Cartoon Style Artwork</div>
+        <div style={styles.featureItem}>Club Logo</div>
+        <div style={styles.featureItem}>Club Colours</div>
+        <div style={styles.featureItem}>No Limit on Wording</div>
+        <div style={styles.featureItem}>Player Name</div>
+        <div style={styles.featureItem}>Player Number</div>
+        <div style={styles.featureItem}>Comes with Mini Keepsake Banner</div>
+        <div style={styles.featureItem}>Extra Character $20 Each</div>
       </div>
     </div>
 
@@ -219,18 +292,36 @@ export default function Home() {
               style={styles.form}
               onSubmit={handleSubmit}
             >
-              <input type="text" name="name" placeholder="Name" style={styles.input} required />
-              <input type="tel" name="phone" placeholder="Phone" style={styles.input} />
-              <input type="email" name="email" placeholder="Email" style={styles.input} required />
-              <input type="date" name="date" style={styles.input} required />
-              <input type="number" name="quantity" placeholder="Quantity" min={1} style={styles.input} />
+              <input type="text" name="name" placeholder="Name" aria-label="Name" autoComplete="name" style={styles.input} required />
+              <input type="tel" name="phone" placeholder="Phone" aria-label="Phone" autoComplete="tel" style={styles.input} />
+              <input type="email" name="email" placeholder="Email" aria-label="Email" autoComplete="email" style={styles.input} required />
+              <input type="date" name="date" aria-label="Required by date" className="enquiryDateInput" style={styles.input} required />
+              <input type="number" name="quantity" placeholder="Quantity" aria-label="Quantity" min={1} style={styles.input} />
+              <div style={styles.formOptionGroup}>
+                <p style={styles.optionGroupLabel}>Banner Size</p>
+                <div style={styles.sizeOptionsRow}>
+                  <label style={styles.checkboxLabel}>
+                    <input type="radio" name="bannerSize" value="2m" required />
+                    <span>2m</span>
+                  </label>
+                  <label style={styles.checkboxLabel}>
+                    <input type="radio" name="bannerSize" value="4m" />
+                    <span>4m</span>
+                  </label>
+                </div>
+                <label style={styles.checkboxLabel}>
+                  <input type="checkbox" name="poles" value="yes" />
+                  <span>Add poles (+$25)</span>
+                </label>
+              </div>
 
-              {/* Normal / Custom Checkboxes → Club / Photographic */}
+              {/* Banner type options */}
 <div style={styles.checkboxWrapper}>
   {BANNER_TYPE_OPTIONS.map((type) => (
     <label key={type} style={styles.checkboxLabel}>
       <input
         type="checkbox"
+        name="bannerTypeSelection"
         value={type}
         checked={bannerType.includes(type)}
         onChange={handleBannerTypeChange}
@@ -239,11 +330,12 @@ export default function Home() {
     </label>
   ))}
 
-  {/* Type Input box (2-5 words) */}
+  {/* Club name input */}
   <input
     type="text"
     name="bannerTypeText"
-    placeholder="Club"
+    placeholder="Club Name"
+    aria-label="Club Name"
     maxLength={50} // approx 2-5 words
     style={{ ...styles.input, flex: 1 }}
   />
@@ -252,18 +344,33 @@ export default function Home() {
 
               {/* File input */}
               <input
+                ref={fileInputRef}
                 type="file"
                 name="file"
                 accept="image/*"
-                style={styles.input}
                 onChange={handleFileChange}
+                required={requiresPhoto}
+                style={styles.hiddenFileInput}
               />
-              <p style={styles.helperText}>Photo upload is optional.</p>
+              <button
+                type="button"
+                style={styles.fileSelectButton}
+                onClick={() => fileInputRef.current?.click()}
+                aria-label={fileName ? 'Change photo file' : 'Select photo file'}
+              >
+                {fileName ? 'Change Photo' : 'Select Photo'}
+              </button>
+              <p style={styles.helperText}>
+                {requiresPhoto
+                  ? 'Photo is required for Photographic and Cartoon banners.'
+                  : 'Photo upload is not needed for Club banners.'}
+              </p>
               {fileName && <p>Selected file: {fileName}</p>}
 
               <textarea
                 name="comments"
-                placeholder="Comments"
+                placeholder="Comments or any extras?"
+                aria-label="Comments"
                 style={{ ...styles.input, minHeight: '100px', resize: 'vertical' }}
               />
 
@@ -288,7 +395,7 @@ export default function Home() {
 
         {activeImage !== null && (
   <div style={styles.lightboxOverlay} onClick={() => setActiveImage(null)}>
-    <button style={styles.closeButton} onClick={() => setActiveImage(null)}>✕</button>
+    <button type="button" aria-label="Close image preview" style={styles.closeButton} onClick={() => setActiveImage(null)}>✕</button>
     <motion.div
       style={styles.lightboxImageWrapper}
       initial={{ scale: 0.8, opacity: 0 }}
@@ -303,22 +410,26 @@ export default function Home() {
             ? `/images/productImg${activeImage + 1}.jpeg`
             : activeImage === 'club'
             ? '/images/textOnly.jpg'
+            : activeImage === 'photo'
+            ? '/images/photoImg.jpg'
             : '/images/photoImg.jpg'
         }
         alt="Full view"
         fill
+        sizes="100vw"
         style={{ objectFit: 'contain' }}
       />
     </motion.div>
   </div>
 )}
-      </div>
+      </main>
     </ClientLayout>
   );
 }
 
 // Responsive breakpoint
 const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+const isTabletOrSmaller = typeof window !== 'undefined' && window.innerWidth <= 1024;
 
 const styles: { [key: string]: CSSProperties } = {
   pageWrapper: {
@@ -345,19 +456,25 @@ const styles: { [key: string]: CSSProperties } = {
   },
 
   infoGrid: {
-    display: 'flex',
-    gap: isMobile ? '1rem' : '2rem',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    flexDirection: isMobile ? 'column' : 'row',
+    display: 'grid',
+    gap: '1rem',
+    gridTemplateColumns: '1fr',
+    justifyItems: 'stretch',
   },
 
   infoBox: {
-    flex: isMobile ? '1 1 100%' : '1 1 300px',
     backgroundColor: '#111',
-    padding: isMobile ? '1rem' : '1.5rem',
+    padding: isTabletOrSmaller ? '1rem' : '1.5rem',
     borderRadius: '10px',
     textAlign: 'center',
+  },
+  bannerCardHeading: {
+    color: '#39FF14',
+    marginBottom: '1rem',
+    fontSize: 'clamp(1.2rem, 3.4vw, 2rem)',
+    lineHeight: 1.25,
+    wordBreak: 'break-word',
+    overflowWrap: 'anywhere',
   },
 
   photoPriceRow: {
@@ -376,32 +493,50 @@ const styles: { [key: string]: CSSProperties } = {
   },
   photoPriceWrapper: {
   display: 'flex',
-  alignItems: 'center',
+  alignItems: isTabletOrSmaller ? 'stretch' : 'center',
+  flexDirection: isTabletOrSmaller ? 'column' : 'row',
   gap: '1rem',
   flexWrap: 'wrap',
 },
 photoContainer: {
   position: 'relative',
-  flex: '2 1 250px',
+  flex: isTabletOrSmaller ? '1 1 100%' : '2 1 250px',
   width: '100%',
-  aspectRatio: '16 / 9',
+  aspectRatio: isTabletOrSmaller ? '4 / 3' : '16 / 9',
   borderRadius: '8px',
   overflow: 'hidden',
 },
   priceColumn: {
-  flex: '1 1 120px',
-  minWidth: '120px',
+  flex: isTabletOrSmaller ? '1 1 100%' : '1 1 120px',
+  minWidth: isTabletOrSmaller ? '100%' : '120px',
   display: 'flex',
+  alignItems: isTabletOrSmaller ? 'center' : 'flex-start',
   flexDirection: 'column',
   gap: '0.5rem',
 },
 
   priceText: {
-  fontSize: 'clamp(1.2rem, 2vw, 2rem)',
+  fontSize: 'clamp(1rem, 2.8vw, 1.6rem)',
   color: '#ffffff',
   fontWeight: 500,
-  whiteSpace: 'nowrap',
+  whiteSpace: 'normal',
+  wordBreak: 'break-word',
+  overflowWrap: 'anywhere',
+  textAlign: 'center',
 },
+  featureList: {
+    display: 'grid',
+    gridTemplateColumns: isTabletOrSmaller ? '1fr' : '1fr 1fr',
+    gap: isTabletOrSmaller ? '0.45rem' : '8px 24px',
+    marginTop: '1rem',
+    textAlign: 'left',
+  },
+  featureItem: {
+    fontSize: 'clamp(0.9rem, 2.2vw, 1rem)',
+    lineHeight: 1.35,
+    wordBreak: 'break-word',
+    overflowWrap: 'anywhere',
+  },
 
   optionsFormSection: {
     display: 'flex',
@@ -461,6 +596,39 @@ photoContainer: {
     fontSize: '0.9rem',
     color: '#b3b3b3',
   },
+  hiddenFileInput: {
+    display: 'none',
+  },
+  fileSelectButton: {
+    padding: '0.75rem 1rem',
+    borderRadius: '6px',
+    border: '1px solid #2c2c2c',
+    backgroundColor: '#111',
+    color: '#39FF14',
+    fontSize: '16px',
+    cursor: 'pointer',
+    fontWeight: 600,
+  },
+  formOptionGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '0.65rem',
+    padding: '0.85rem',
+    border: '1px solid #2e2e2e',
+    borderRadius: '8px',
+    backgroundColor: '#101010',
+  },
+  optionGroupLabel: {
+    margin: 0,
+    fontSize: '0.95rem',
+    color: '#39FF14',
+    fontWeight: 600,
+  },
+  sizeOptionsRow: {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+    gap: '0.65rem',
+  },
 
   imageWrapper: {
     position: 'relative',
@@ -468,6 +636,13 @@ photoContainer: {
     aspectRatio: '16 / 9',
     borderRadius: '8px',
     overflow: 'hidden',
+  },
+  previewButton: {
+    border: 'none',
+    margin: 0,
+    padding: 0,
+    background: 'transparent',
+    display: 'block',
   },
 
   introSection: {

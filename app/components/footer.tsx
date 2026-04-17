@@ -27,13 +27,13 @@ const Footer = () => {
               </a>
           </div>
           <div className="d-flex gap-2">
-            <a href="https://www.facebook.com/Milestonebannersbygecko/" target="_blank" rel="noopener noreferrer" style={{ color: '#39FF14' }}>
+            <a aria-label="Milestone Banners on Facebook" href="https://www.facebook.com/Milestonebannersbygecko/" target="_blank" rel="noopener noreferrer" style={{ color: '#39FF14' }}>
               <FaFacebookF size={24} />
             </a>
-            <a href="https://www.instagram.com/gecko_signs/" target="_blank" rel="noopener noreferrer" style={{ color: '#39FF14' }}>
+            <a aria-label="Gecko Signs on Instagram" href="https://www.instagram.com/gecko_signs/" target="_blank" rel="noopener noreferrer" style={{ color: '#39FF14' }}>
               <FaInstagram size={24} />
             </a>
-            <a href="mailto:sam@geckosigns.net.au?subject=Banner Enquiry" style={{ color: '#39FF14' }}>
+            <a aria-label="Email Gecko Signs" href="mailto:sam@geckosigns.net.au?subject=Banner Enquiry" style={{ color: '#39FF14' }}>
               <MdEmail size={24} />
             </a>
           </div>

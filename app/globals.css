@@ -32,3 +32,8 @@ html, body {
 body {
   margin: 0;
 }
+
+.enquiryDateInput::-webkit-calendar-picker-indicator {
+  filter: brightness(0) saturate(100%) invert(80%) sepia(96%) saturate(2229%) hue-rotate(43deg) brightness(103%) contrast(101%);
+  cursor: pointer;
+}

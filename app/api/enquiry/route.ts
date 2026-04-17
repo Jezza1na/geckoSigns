@@ -32,6 +32,8 @@ const recipients =
   ];
 
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
+const PHOTO_REQUIRED_TYPES = new Set(["Photographic", "Cartoon"]);
+const ALLOWED_BANNER_SIZES = new Set(["2m", "4m"]);
 
 type OptionalUpload = File | null;
 
@@ -105,6 +107,8 @@ export async function POST(req: Request) {
     const phone = (formData.get("phone") as string) || "";
     const date = (formData.get("date") as string) || "";
     let quantity = parseInt((formData.get("quantity") as string) || "1");
+    const bannerSize = (formData.get("bannerSize") as string) || "";
+    const polesSelected = formData.get("poles") === "yes";
     const comments = (formData.get("comments") as string) || "";
     const bannerTypeText = (formData.get("bannerTypeText") as string) || "";
     const bannerTypes = formData.getAll("bannerType") as string[];
@@ -137,6 +141,21 @@ export async function POST(req: Request) {
     if (bannerTypes.length === 0) {
       return NextResponse.json(
         { error: "Select at least one banner type." },
+        { status: 400 }
+      );
+    }
+
+    if (!ALLOWED_BANNER_SIZES.has(bannerSize)) {
+      return NextResponse.json(
+        { error: "Please select a valid banner size (2m or 4m)." },
+        { status: 400 }
+      );
+    }
+
+    const requiresPhoto = bannerTypes.some((type) => PHOTO_REQUIRED_TYPES.has(type));
+    if (requiresPhoto && !file) {
+      return NextResponse.json(
+        { error: "Photo is required for Photographic and Cartoon banners." },
         { status: 400 }
       );
     }
@@ -225,6 +244,8 @@ export async function POST(req: Request) {
             <p><strong>Phone:</strong> ${safePhone || "Not provided"}</p>
             <p><strong>Date:</strong> ${submittedDate.toDateString()}</p>
             <p><strong>Quantity:</strong> ${quantity}</p>
+            <p><strong>Banner Size:</strong> ${bannerSize}</p>
+            <p><strong>Poles:</strong> ${polesSelected ? "Yes" : "No"}</p>
             <p><strong>Banner Type:</strong> ${bannerTypes.join(", ")}</p>
             <p><strong>Club:</strong> ${safeBannerTypeText || "Not provided"}</p>
             <p><strong>Comments:</strong> ${safeComments}</p>
